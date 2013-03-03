@@ -81,7 +81,12 @@ bool cparse_object_save(CParseObject *obj, CParseError **error)
 		return false;
 	}
 	else {
+		CParseValue *id = cparse_table_remove(response, "objectId");
+		if(id != NULL)
+			obj->objectId = strdup(cparse_value_get_string(id));
+
 		cparse_table_merge(obj->attributes, response);
+
 		return true;
 	}
 }

@@ -1,4 +1,5 @@
 #include <check.h>
+#include <stdio.h>
 #include <cparse/object.h>
 #include <cparse/parse.h>
 
@@ -24,7 +25,13 @@ START_TEST(test_cparse_object_save)
 
 	cparse_object_set_string(obj, "name", "spok");
 
-	cparse_object_save(obj, NULL);
+    CParseError *error = NULL;
+
+	cparse_object_save(obj, &error);
+
+    fail_unless(error == NULL);
+
+    fail_unless(obj->objectId != NULL);
 }
 END_TEST
 
