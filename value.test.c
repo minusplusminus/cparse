@@ -52,11 +52,7 @@ START_TEST(test_cparse_value_set_array)
 {
 	CParseArray *array = cparse_array_new();
 
-	CParseValue inner;
-
-	cparse_value_set_number(&inner, 1234);
-
-	cparse_array_add(array, &inner);
+	cparse_array_add_number(array, 1234);
 
 	cparse_value_set_array(cpv_test, array);
 
@@ -68,9 +64,7 @@ START_TEST(test_cparse_array_add)
 {
 	CParseArray *array = cparse_array_new();
 
-	cparse_value_set_number(cpv_test, 1234);
-
-	cparse_array_add(array, cpv_test);
+	cparse_array_add_number(array, 1234);
 
 	fail_unless(cparse_array_size(array) == 1);
 

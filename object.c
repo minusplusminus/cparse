@@ -213,10 +213,10 @@ void cparse_object_set_number(CParseObject *obj, const char *key, long long valu
 	assert(obj != NULL);
 	assert(obj->attributes != NULL);
 
-	CParseValue *v = cparse_value_new();
-	cparse_value_set_number(v, value);
+	CParseValue v;
+	cparse_value_set_number(&v, value);
 
-	cparse_object_set_value(obj, key, v);
+	cparse_object_set_value(obj, key, &v);
 }
 
 void cparse_object_set_real(CParseObject *obj, const char *key, long double value)
@@ -224,10 +224,20 @@ void cparse_object_set_real(CParseObject *obj, const char *key, long double valu
 	assert(obj != NULL);
 	assert(obj->attributes != NULL);
 
-	CParseValue *v = cparse_value_new();
-	cparse_value_set_real(v, value);
+	CParseValue v;
+	cparse_value_set_real(&v, value);
 
-	cparse_object_set_value(obj, key, v);
+	cparse_object_set_value(obj, key, &v);
+}
+void cparse_object_set_bool(CParseObject *obj, const char *key, bool value)
+{
+    assert(obj != NULL);
+    assert(obj->attributes != NULL);
+
+    CParseValue v;
+    cparse_value_set_bool(&v, value);
+
+    cparse_object_set_value(obj, key, &v);
 }
 
 void cparse_object_set_string(CParseObject *obj, const char *key, const char *value)
@@ -235,10 +245,10 @@ void cparse_object_set_string(CParseObject *obj, const char *key, const char *va
 	assert(obj != NULL);
 	assert(obj->attributes != NULL);
 
-	CParseValue *v = cparse_value_new();
-	cparse_value_set_string(v, value);
+	CParseValue v;
+	cparse_value_set_string(&v, value);
 
-	cparse_object_set_value(obj, key, v);
+	cparse_object_set_value(obj, key, &v);
 }
 
 void cparse_object_set_object(CParseObject *obj, const char *key, CParseObject *value)
@@ -246,10 +256,10 @@ void cparse_object_set_object(CParseObject *obj, const char *key, CParseObject *
 	assert(obj != NULL);
 	assert(obj->attributes != NULL);
 
-	CParseValue *v = cparse_value_new();
-	cparse_value_set_object(v, value);
+	CParseValue v;
+	cparse_value_set_object(&v, value);
 
-	cparse_object_set_value(obj, key, v);
+	cparse_object_set_value(obj, key, &v);
 }
 
 
@@ -420,6 +430,16 @@ long double cparse_object_get_real(CParseObject *obj, const char *key, long doub
         return cparse_value_get_real(value);
     else
         return defaultValue;
+}
+
+bool cparse_object_get_bool(CParseObject *obj, const char *key)
+{
+    CParseValue *value = cparse_object_get_value(obj, key);
+
+    if(value)
+        return cparse_value_get_bool(value);
+    else
+        return false;
 }
 
 char *cparse_object_get_string(CParseObject *obj, const char *key)

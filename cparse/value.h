@@ -36,25 +36,17 @@ struct cparse_array
     size_t size;
 };
 
+/* value initializers */
 CParseValue *cparse_value_new();
-
-void cparse_value_free(CParseValue *value);
-
 CParseValue *cparse_value_copy(CParseValue *other);
 
-CParseArray *cparse_array_copy(CParseArray *other);
+/* value cleanup */
+void cparse_value_free(CParseValue *value);
 
+/* value equality */
 bool cparse_value_equals(CParseValue *value, CParseValue *other);
 
-CParseArray *cparse_array_new();
-void cparse_array_free(CParseArray *value);
-
-void cparse_array_add(CParseArray *array, CParseValue *value);
-
-CParseValue* cparse_array_remove(CParseArray *value, size_t index);
-
-size_t cparse_array_size(CParseArray *value);
-
+/* value setters */
 /*!
  * sets the variant number value 
  * @param v the value object to set 
@@ -107,7 +99,41 @@ CParseArray *cparse_value_get_array(CParseValue *value);
  */
 CParseObject *cparse_value_get_object(CParseValue *);
 
+
+/* array initializers */
+CParseArray *cparse_array_new();
+CParseArray *cparse_array_copy(CParseArray *other);
+
+/* array cleanup */
+void cparse_array_free(CParseArray *value);
+
+/* array setters */
+void cparse_array_add_value(CParseArray *array, CParseValue *value);
+void cparse_array_add_number(CParseArray *array, long long value);
+void cparse_array_add_real(CParseArray *array, long double value);
+void cparse_array_add_bool(CParseArray *array, bool value);
+void cparse_array_add_string(CParseArray *array, const char *value);
+void cparse_array_add_object(CParseArray *array, CParseObject *obj);
+void cparse_array_add_array(CParseArray *array, CParseArray *value);
+
+/* array getters */
+CParseValue *cparse_array_get_value(CParseArray *array, size_t index);
+long long cparse_array_get_number(CParseArray *array, size_t index, long long defaultValue);
+long double cparse_array_get_real(CParseArray *array, size_t index, long double defaultValue);
+char *cparse_array_get_string(CParseArray *array, size_t index);
+bool cparse_array_get_bool(CParseArray *array, size_t index);
+CParseObject *cparse_array_get_object(CParseArray *array, size_t index);
+CParseArray *cparse_array_get_array(CParseArray *array, size_t index);
+
+CParseValue* cparse_array_remove(CParseArray *value, size_t index);
+
+size_t cparse_array_size(CParseArray *value);
+
+/* json stuff */
+
 size_t cparse_value_to_json(CParseValue *value, char *data, size_t pos);
+
+size_t cparse_array_to_json(CParseArray *array, char *data, size_t pos);
 
 CParseArray* cparse_array_from_json(json_object *obj);
 

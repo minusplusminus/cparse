@@ -218,7 +218,7 @@ CParseArray *cparse_value_get_array(CParseValue *v)
     return (CParseArray *) v->object_value;
 }
 
-void cparse_array_add(CParseArray *arr, CParseValue *value)
+void cparse_array_add_value(CParseArray *arr, CParseValue *value)
 {
     arr->value = realloc(arr->value, arr->size + 1);
 
@@ -229,6 +229,118 @@ void cparse_array_add(CParseArray *arr, CParseValue *value)
     }
 
     arr->value[arr->size++] = cparse_value_copy(value);
+}
+
+void cparse_array_add_number(CParseArray *arr, long long value)
+{
+    CParseValue v;
+    cparse_value_set_number(&v, value);
+    cparse_array_add_value(arr, &v);
+}
+
+void cparse_array_add_real(CParseArray *arr, long double real)
+{
+    CParseValue v;
+    cparse_value_set_real(&v, real);
+    cparse_array_add_value(arr, &v);
+}
+
+void cparse_array_add_bool(CParseArray *arr, bool real)
+{
+    CParseValue v;
+    cparse_value_set_bool(&v, real);
+    cparse_array_add_value(arr, &v);
+}
+
+
+void cparse_array_add_string(CParseArray *arr, const char *value)
+{
+    CParseValue v;
+    cparse_value_set_string(&v, value);
+    cparse_array_add_value(arr, &v);
+}
+
+
+void cparse_array_add_object(CParseArray *arr, CParseObject *value)
+{
+    CParseValue v;
+    cparse_value_set_object(&v, value);
+    cparse_array_add_value(arr, &v);
+}
+
+void cparse_array_add_array(CParseArray *arr, CParseArray *value)
+{
+    CParseValue v;
+    cparse_value_set_array(&v, value);
+    cparse_array_add_value(arr, &v);
+}
+
+CParseValue *cparse_array_get_value(CParseArray *arr, size_t index)
+{
+    assert(arr != NULL);
+
+    if(index >= arr->size)
+        return NULL;
+
+    return arr->value[index];
+}
+
+long long cparse_array_get_number(CParseArray *arr, size_t index, long long defaultValue)
+{
+    CParseValue *value = cparse_array_get_value(arr, index);
+
+    if(value)
+        return cparse_value_get_number(value);
+    else
+        return defaultValue;
+}
+bool cparse_array_get_bool(CParseArray *arr, size_t index)
+{
+    CParseValue *value = cparse_array_get_value(arr, index);
+
+    if(value)
+        return cparse_value_get_bool(value);
+    else
+        return false;
+}
+long double cparse_array_get_real(CParseArray *arr, size_t index, long double defaultValue)
+{
+    CParseValue *value = cparse_array_get_value(arr, index);
+
+    if(value)
+        return cparse_value_get_real(value);
+    else
+        return defaultValue;
+}
+
+char* cparse_array_get_string(CParseArray *arr, size_t index)
+{
+    CParseValue *value = cparse_array_get_value(arr, index);
+
+    if(value)
+        return cparse_value_get_string(value);
+    else
+        return NULL;
+}
+
+CParseObject* cparse_array_get_object(CParseArray *arr, size_t index)
+{
+    CParseValue *value = cparse_array_get_value(arr, index);
+
+    if(value)
+        return cparse_value_get_object(value);
+    else
+        return NULL;
+}
+
+CParseArray* cparse_array_get_array(CParseArray *arr, size_t index)
+{
+    CParseValue *value = cparse_array_get_value(arr, index);
+
+    if(value)
+        return cparse_value_get_array(value);
+    else
+        return NULL;
 }
 
 CParseValue *cparse_array_remove(CParseArray *arr, size_t index)
@@ -263,7 +375,7 @@ size_t cparse_array_size(CParseArray *array) {
     return array->size;
 }
 
-static size_t cparse_object_array_to_json(CParseArray *array, char *data, size_t pos)
+size_t cparse_array_to_json(CParseArray *array, char *data, size_t pos)
 {
     int i;
 
@@ -286,20 +398,27 @@ size_t cparse_value_to_json(CParseValue *value, char *data, size_t pos)
 
     switch(cparse_value_type(value))
     {
+        case kCPValueBoolean:
+            pos += sprintf(&data[pos], "%s", cparse_value_get_bool(value) ? "true" : "false");
+        break;
         case kCPValueNumber:
-        pos += sprintf(&data[pos], "%lld", cparse_value_get_number(value));
+            pos += sprintf(&data[pos], "%lld", cparse_value_get_number(value));
         break;
         case kCPValueReal:
-        pos += sprintf(&data[pos], "%Lf", cparse_value_get_real(value));
+            pos += sprintf(&data[pos], "%Lf", cparse_value_get_real(value));
         break;
         case kCPValueString:
-        pos += sprintf(&data[pos], "\"%s\"", cparse_value_get_string(value));
+        {
+            char *temp = cparse_value_get_string(value);
+
+            pos += sprintf(&data[pos], "\"%s\"", temp == NULL ? "null" : temp);
+        }
         break;
         case kCPValueObject:
-        pos = cparse_object_to_json(cparse_value_get_object(value), data, pos);
+            pos = cparse_object_to_json(cparse_value_get_object(value), data, pos);
         break;
         case kCPValueArray:
-        pos = cparse_object_array_to_json(cparse_value_get_array(value), data, pos);
+            pos = cparse_array_to_json(cparse_value_get_array(value), data, pos);
         break;
     }
     return pos;
@@ -354,7 +473,7 @@ CParseArray *cparse_array_from_json(json_object *jarray)
         CParseValue *value = cparse_value_from_json(jobj);
 
         if(value != NULL) {
-            cparse_array_add(array, value);
+            cparse_array_add_value(array, value);
         }
     }
 

@@ -41,6 +41,7 @@ void cparse_object_delete(CParseObject *);
 void cparse_object_set_value(CParseObject *obj, const char *key, CParseValue *value);
 void cparse_object_set_number(CParseObject *obj, const char *key, long long value);
 void cparse_object_set_real(CParseObject *obj, const char *key, long double value);
+void cparse_object_set_bool(CParseObject *obj, const char *key, bool value);
 void cparse_object_set_string(CParseObject *obj, const char *key, const char *value);
 void cparse_object_set_object(CParseObject *obj, const char *key, CParseObject *value);
 void cparse_object_set_array(CParseObject *obj, const char *key, CParseArray *array);
@@ -49,6 +50,7 @@ void cparse_object_set_array(CParseObject *obj, const char *key, CParseArray *ar
 CParseValue *cparse_object_get_value(CParseObject *, const char *key);
 long long cparse_object_get_number(CParseObject *, const char *key, long long);
 long double cparse_object_get_real(CParseObject *, const char *key, long double);
+bool cparse_object_get_bool(CParseObject *, const char *key);
 char *cparse_object_get_string(CParseObject *, const char *key);
 CParseObject *cparse_object_get_object(CParseObject *, const char *key);
 CParseArray *cparse_object_get_array(CParseObject *, const char *key);
