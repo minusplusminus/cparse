@@ -38,6 +38,6 @@ CParseResponse *cparse_io_perform(CParseRequest *request);
 
 CParseRequest *cparse_request_new();
 
-CParseTable *cparse_io_request_json(CParseRequest *request, CParseError **error);
+CParseObject *cparse_io_request_json(CParseRequest *request, CParseError **error);
 
 #endif

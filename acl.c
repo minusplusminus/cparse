@@ -25,6 +25,16 @@ CParseACL *cparse_acl_new_with_user(CParseUser *user) {
 	return acl;
 }
 
+CParseACL *cparse_acl_copy(CParseACL *other) {
+	CParseACL *acl = cparse_acl_new();
+
+	acl->name = strdup(other->name);
+	acl->read = other->read;
+	acl->write = other->write;
+
+	return acl;
+}
+
 void cparse_set_default_acl(CParseACL *acl, bool currentUserAccess) {
 	default_acl = acl;
 
@@ -33,7 +43,7 @@ void cparse_set_default_acl(CParseACL *acl, bool currentUserAccess) {
 	}
 }
 
-void cparse_acl_delete(CParseACL *acl) {
+void cparse_acl_free(CParseACL *acl) {
 	if(acl->name) {
 		free(acl->name);
 	}

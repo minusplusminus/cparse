@@ -38,7 +38,7 @@ struct cparse_array
 
 CParseValue *cparse_value_new();
 
-void cparse_value_delete(CParseValue *value);
+void cparse_value_free(CParseValue *value);
 
 CParseValue *cparse_value_copy(CParseValue *other);
 
@@ -47,7 +47,7 @@ CParseArray *cparse_array_copy(CParseArray *other);
 bool cparse_value_equals(CParseValue *value, CParseValue *other);
 
 CParseArray *cparse_array_new();
-void cparse_array_delete(CParseArray *value);
+void cparse_array_free(CParseArray *value);
 
 void cparse_array_add(CParseArray *array, CParseValue *value);
 
@@ -76,7 +76,7 @@ void cparse_value_set_string(CParseValue *value, const char *str);
  * sets the variant pointer value @param v the variant to set @param value
  * the pointer value to set
  */
-void cparse_value_set_object(CParseValue *, CParseTable *);
+void cparse_value_set_object(CParseValue *, CParseObject *);
 
 void cparse_value_set_array(CParseValue *v, CParseArray *value);
 
@@ -105,12 +105,14 @@ CParseArray *cparse_value_get_array(CParseValue *value);
  * gets the variant pointer value @param v the variant to get the value
  * from
  */
-CParseTable *cparse_value_get_object(CParseValue *);
+CParseObject *cparse_value_get_object(CParseValue *);
 
 size_t cparse_value_to_json(CParseValue *value, char *data, size_t pos);
 
 CParseArray* cparse_array_from_json(json_object *obj);
 
 CParseValue *cparse_value_from_json(json_object *jobj);
+
+size_t cparse_value_to_json(CParseValue *value, char *data, size_t pos);
 
 #endif

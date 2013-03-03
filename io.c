@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <curl/curl.h>
 #include <json/json.h>
-#include <cparse/table.h>
+#include <cparse/object.h>
 #include <cparse/error.h>
 #include "io.h"
 
@@ -75,29 +75,29 @@ static void cparse_io_set_headers(CURL *curl)
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 }
 
-CParseTable *cparse_io_request_json(CParseRequest *request, CParseError **error)
+CParseObject *cparse_io_request_json(CParseRequest *request, CParseError **error)
 {
     CParseResponse *response = cparse_io_perform(request);
 
     json_object *jobj = json_tokener_parse(response->text);
 
-    CParseTable *table = cparse_table_from_json(jobj);
+    CParseObject *obj = cparse_object_from_json(jobj);
 
-    CParseValue *errorCode = cparse_table_get(table, "error");
+    char *errorMessage = cparse_object_get_string(obj, "error");
 
-    if(errorCode != NULL) {
+    if(errorMessage != NULL) {
         *error = cparse_error_new();
 
-        (*error)->message = cparse_value_get_string(errorCode);
+        (*error)->message = strdup(errorMessage);
 
-        (*error)->code = cparse_value_get_number(cparse_table_get(table, "code"));
+        (*error)->code = cparse_object_get_number(obj, "code", 0);
 
-        cparse_table_delete(table);
+        cparse_object_free(obj);
 
         return NULL;
     }
 
-    return table;
+    return obj;
 }
 CParseResponse *cparse_io_perform(CParseRequest *request)
 {

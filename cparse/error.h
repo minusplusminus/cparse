@@ -11,6 +11,6 @@ struct cparse_error
 
 CParseError *cparse_error_new();
 
-void cparse_error_delete(CParseError *error);
+void cparse_error_free(CParseError *error);
 
 #endif

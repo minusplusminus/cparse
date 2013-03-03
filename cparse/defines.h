@@ -16,11 +16,9 @@ typedef struct cparse_error CParseError;
 
 typedef struct cparse_object CParseObject;
 
+typedef struct cparse_object_attribute CParseObjectAttribute;
+
 typedef struct cparse_query CParseQuery;
-
-typedef struct cparse_table_entry CParseTableEntry;
-
-typedef struct cparse_table CParseTable;
 
 typedef struct cparse_user CParseUser;
 

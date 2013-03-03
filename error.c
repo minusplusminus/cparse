@@ -17,7 +17,7 @@ CParseError *cparse_error_new()
 	return e;
 }
 
-void cparse_error_delete(CParseError* e) {
+void cparse_error_free(CParseError* e) {
 	if(e->message)
 		free(e->message);
 

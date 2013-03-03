@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <cparse/value.h>
-#include <cparse/table.h>
+#include <cparse/object.h>
 
 #include <assert.h>
 
@@ -34,7 +34,7 @@ CParseValue *cparse_value_copy(CParseValue *other)
             value->object_value = strdup((char*)other->object_value);
             break;
         case kCPValueObject:
-            value->object_value = cparse_table_copy((CParseTable*) other->object_value);
+            value->object_value = cparse_object_copy((CParseObject*) other->object_value);
             break;
         case kCPValueArray:
             value->object_value = cparse_array_copy((CParseArray*) other->object_value);
@@ -86,17 +86,17 @@ void cparse_value_clear(CParseValue *value)
             free(value->object_value);
             break;
         case kCPValueObject:
-            cparse_table_delete((CParseTable *) value->object_value);
+            cparse_object_free((CParseObject *) value->object_value);
             break;
         case kCPValueArray:
-            cparse_array_delete((CParseArray *) value->object_value);
+            cparse_array_free((CParseArray *) value->object_value);
             break;
         default:
             break;
         }
     }
 }
-void cparse_value_delete(CParseValue *value)
+void cparse_value_free(CParseValue *value)
 {
     cparse_value_clear(value);
 
@@ -113,7 +113,7 @@ CParseArray *cparse_array_new()
     return value;
 }
 
-void cparse_array_delete(CParseArray *arr)
+void cparse_array_free(CParseArray *arr)
 {
     if (arr->value)
     {
@@ -121,7 +121,7 @@ void cparse_array_delete(CParseArray *arr)
 
         for (i = 0; i < arr->size; i++)
         {
-            cparse_value_delete(arr->value[i]);
+            cparse_value_free(arr->value[i]);
         }
         free(arr->value);
     }
@@ -160,7 +160,7 @@ void cparse_value_set_string(CParseValue *v, const char *value)
     v->type = kCPValueString;
     v->object_value = strdup(value);
 }
-void cparse_value_set_object(CParseValue *v, CParseTable *value)
+void cparse_value_set_object(CParseValue *v, CParseObject *value)
 {
     assert(v != 0);
     cparse_value_clear(v);
@@ -200,7 +200,7 @@ char *cparse_value_get_string(CParseValue *v)
     return (char *) v->object_value;
 }
 
-CParseTable *cparse_value_get_object(CParseValue *v)
+CParseObject *cparse_value_get_object(CParseValue *v)
 {
     assert(v != 0);
     return v->object_value;
@@ -263,6 +263,48 @@ size_t cparse_array_size(CParseArray *array) {
     return array->size;
 }
 
+static size_t cparse_object_array_to_json(CParseArray *array, char *data, size_t pos)
+{
+    int i;
+
+    pos += sprintf(&data[pos], "[");
+
+    for(i = 0; i < array->size; i++) {
+        pos = cparse_value_to_json(array->value[i], data, pos);
+        if(i +1 < array->size) {
+            pos += sprintf(&data[pos], ",");
+        }
+    }
+
+    pos += sprintf(&data[pos], "]");
+
+    return pos;
+}
+
+size_t cparse_value_to_json(CParseValue *value, char *data, size_t pos)
+{
+
+    switch(cparse_value_type(value))
+    {
+        case kCPValueNumber:
+        pos += sprintf(&data[pos], "%lld", cparse_value_get_number(value));
+        break;
+        case kCPValueReal:
+        pos += sprintf(&data[pos], "%Lf", cparse_value_get_real(value));
+        break;
+        case kCPValueString:
+        pos += sprintf(&data[pos], "\"%s\"", cparse_value_get_string(value));
+        break;
+        case kCPValueObject:
+        pos = cparse_object_to_json(cparse_value_get_object(value), data, pos);
+        break;
+        case kCPValueArray:
+        pos = cparse_object_array_to_json(cparse_value_get_array(value), data, pos);
+        break;
+    }
+    return pos;
+}
+
 CParseValue *cparse_value_from_json(json_object *jobj)
 {
     CParseValue *value = NULL;
@@ -285,7 +327,7 @@ CParseValue *cparse_value_from_json(json_object *jobj)
         break;
     case json_type_object:
         value = cparse_value_new();
-        cparse_value_set_object(value, cparse_table_from_json(jobj));
+        cparse_value_set_object(value, cparse_object_from_json(jobj));
         break;
     case json_type_array:
         value = cparse_value_new();

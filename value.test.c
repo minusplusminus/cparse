@@ -1,5 +1,5 @@
 #include <cparse/value.h>
-#include <cparse/table.h>
+#include <cparse/object.h>
 #include <check.h>
 
 static CParseValue *cpv_test;
@@ -11,7 +11,7 @@ static void cparse_test_setup()
 
 static void cparse_test_teardown()
 {
-	cparse_value_delete(cpv_test);
+	cparse_value_free(cpv_test);
 }
 
 START_TEST(test_cparse_value_set_number)
@@ -40,7 +40,7 @@ END_TEST
 
 START_TEST(test_cparse_value_set_object)
 {
-	CParseTable *obj = cparse_table_new(0);
+	CParseObject *obj = cparse_object_with_class_name("TestCase");
 
 	cparse_value_set_object(cpv_test, obj);
 
