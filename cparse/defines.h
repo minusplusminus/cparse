@@ -24,6 +24,8 @@ typedef struct cparse_user CParseUser;
 
 typedef void (*CParseUserCallback)(CParseUser *user, CParseError *error);
 
+typedef void (*CParseObjectCallback)(CParseObject *obj, CParseError *error);
+
 typedef enum
 {
     kCPValueNumber,

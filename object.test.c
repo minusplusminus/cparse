@@ -8,6 +8,10 @@ CParseObject *cp_obj = NULL;
 
 static void cparse_test_setup()
 {
+    cparse_set_application_id("CODG0SmrNhqoZOheWT0Q4sATFvQTdZhzOjGA5OGb");
+
+    cparse_set_api_key("wXu2P8buzDdTq02mQgJkxrJz1TEHNgOvKtDTUuZ7");
+
     cp_obj = cparse_object_with_class_name("TestCase");
 }
 
@@ -18,9 +22,6 @@ static void cparse_test_teardown()
 
 START_TEST(test_cparse_object_save)
 {
-	cparse_set_application_id("CODG0SmrNhqoZOheWT0Q4sATFvQTdZhzOjGA5OGb");
-
-	cparse_set_api_key("wXu2P8buzDdTq02mQgJkxrJz1TEHNgOvKtDTUuZ7");
 
 	cparse_object_set_number(cp_obj, "score", 1234);
 
@@ -33,6 +34,23 @@ START_TEST(test_cparse_object_save)
     fail_unless(error == NULL);
 
     fail_unless(cp_obj->objectId != NULL);
+}
+END_TEST
+
+void test_cparse_object_callback(CParseObject *obj, CParseError *error)
+{
+    fail_unless(obj->objectId != NULL);
+}
+
+START_TEST(test_cparse_object_save_in_background)
+{
+    cparse_object_set_number(cp_obj, "score", 4567);
+
+    cparse_object_set_string(cp_obj, "status", "saved in background");
+
+    pthread_t thread = cparse_object_save_in_background(cp_obj, test_cparse_object_callback);
+
+    pthread_join(thread, NULL); /* wait for thread */
 }
 END_TEST
 
@@ -106,6 +124,7 @@ Suite *cparse_object_suite (void)
     tcase_add_test(tc, test_cparse_object_count_attributes);
     tcase_add_test(tc, test_cparse_object_remove_attribute);
     tcase_add_test(tc, test_cparse_object_to_json);
+    tcase_add_test(tc, test_cparse_object_save_in_background);
     suite_add_tcase(s, tc);
 
     return s;

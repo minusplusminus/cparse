@@ -5,6 +5,7 @@
 #include <cparse/defines.h>
 #include <cparse/acl.h>
 #include <json/json.h>
+#include <pthread.h>
 
 struct cparse_object_attribute
 {
@@ -35,6 +36,8 @@ void cparse_object_free(CParseObject *obj);
 
 /* io methods */
 bool cparse_object_save(CParseObject *obj, CParseError **error);
+pthread_t cparse_object_save_in_background(CParseObject *obj, CParseObjectCallback callback);
+
 void cparse_object_delete(CParseObject *);
 void cparse_object_refresh(CParseObject *, CParseError **error);
 

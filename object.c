@@ -235,6 +235,43 @@ bool cparse_object_save(CParseObject *obj, CParseError **error)
 	return true;
 }
 
+struct cparse_object_callback_arg
+{
+    CParseObject *obj;
+    CParseObjectCallback callback;
+    pthread_t thread;
+};
+
+void *cparse_object_save_in_background_callback(void *argument)
+{
+    CParseError *error = NULL;
+    struct cparse_object_callback_arg *arg = (struct cparse_object_callback_arg*) argument;
+
+    cparse_object_save(arg->obj, &error);
+
+    if(arg->callback) {
+        (*arg->callback)(arg->obj, error);
+    }
+
+    free(arg);
+
+    return NULL;
+}
+
+pthread_t cparse_object_save_in_background(CParseObject *obj, CParseObjectCallback callback)
+{
+    assert(obj != NULL);
+    struct cparse_object_callback_arg *arg = malloc(sizeof(struct cparse_object_callback_arg));
+
+    arg->obj = obj;
+    arg->callback = callback;
+
+    int rc = pthread_create(&arg->thread, NULL, cparse_object_save_in_background_callback, arg);
+    assert(rc == 0);
+
+    return arg->thread;
+}
+
 /* setters */
 
 void cparse_object_set_number(CParseObject *obj, const char *key, long long value)
