@@ -36,6 +36,7 @@ void cparse_object_free(CParseObject *obj);
 /* io methods */
 bool cparse_object_save(CParseObject *obj, CParseError **error);
 void cparse_object_delete(CParseObject *);
+void cparse_object_refresh(CParseObject *, CParseError **error);
 
 /* setters */
 void cparse_object_set_value(CParseObject *obj, const char *key, CParseValue *value);

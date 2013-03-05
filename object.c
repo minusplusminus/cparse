@@ -6,7 +6,7 @@
 #include <cparse/value.h>
 #include <stdio.h>
 #include "io.h"
-
+#include <cparse/util.h>
 
 /*
  * this should be prime
@@ -164,12 +164,44 @@ void cparse_object_free(CParseObject *obj) {
 
 /* io */
 
+void cparse_object_refresh(CParseObject *obj, CParseError **error)
+{
+    CParseRequest *request;
+    CParseObject *response;
+    char buf[BUFSIZ+1];
+
+    if(!obj->objectId || !*obj->objectId) {
+        return;
+    }
+
+    request = cparse_request_new();
+
+    /* build the request */
+    snprintf(buf, BUFSIZ, "classes/%s/%s", obj->className, obj->objectId);
+
+    request->path = strdup(buf);
+
+    request->method = kCPRequestGet;
+
+    /* do the deed */
+    response = cparse_io_request_json(request, error);
+
+    if(error != NULL && *error != NULL)
+    {
+        return;
+    }
+
+    /* merge the response with the object */
+    cparse_object_merge_attributes(obj, response);
+}
+
 bool cparse_object_save(CParseObject *obj, CParseError **error)
 {
 	CParseObject *response;
 	CParseRequest *request = cparse_request_new();
 	char buf[BUFSIZ+1];
 
+    /* build the request based on the id */
 	if(!obj->objectId || !*obj->objectId) {
 		snprintf(buf, BUFSIZ, "classes/%s", obj->className);
 
@@ -185,25 +217,22 @@ bool cparse_object_save(CParseObject *obj, CParseError **error)
 		request->method = kCPRequestPut;
 	}
 
+    /* build the json payload */
 	request->payload = calloc(sizeof(char), MAX_PAYLOAD_SIZE);
 
 	request->payload_size = cparse_object_to_json(obj, request->payload, 0);
 
+    /* do the deed */
 	response = cparse_io_request_json(request, error);
 
 	if(error != NULL && *error != NULL) {
-		fputs((*error)->message, stderr);
 		return false;
 	}
-	else {
-		CParseValue *id = cparse_object_remove_attribute(response, "objectId");
-		if(id != NULL)
-			obj->objectId = strdup(cparse_value_get_string(id));
 
-		cparse_object_merge_attributes(obj, response);
+    /* merge the result with the object */
+    cparse_object_merge_attributes(obj, response);
 
-		return true;
-	}
+	return true;
 }
 
 /* setters */
@@ -480,6 +509,22 @@ long cparse_object_attribute_count(CParseObject * obj)
 
 void cparse_object_merge_attributes(CParseObject *a, CParseObject *b)
 {
+
+    CParseValue *id = cparse_object_remove_attribute(b, "objectId");
+
+    if(id != NULL)
+        a->objectId = strdup(cparse_value_get_string(id));
+
+    id = cparse_object_remove_attribute(b, "createdAt");
+
+    if(id != NULL)
+        a->createdAt = cparse_date_time(cparse_value_get_string(id));
+
+    id = cparse_object_remove_attribute(b, "updatedAt");
+
+    if(id != NULL)
+        a->updatedAt = cparse_date_time(cparse_value_get_string(id));
+
     if(b->attr_count)
     {
         int i;

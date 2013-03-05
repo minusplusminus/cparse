@@ -28,6 +28,8 @@ CParseArray *array = cparse_array_new();
 
 cparse_array_add_number(array, 1234);
 
+cparse_array_add_string(array, "4567");
+
 CParseObject *obj = cparse_object_new();
 
 cparse_object_set_array(obj, "numbers", array);
@@ -38,7 +40,9 @@ cparse_object_to_json(obj, buf, 0);
 
 puts(buf); 
 
+cparse_object_free(obj);
+
 /* will print:
-{"numbers":[1234]}
+{"numbers":[1234,"4567"]}
 */
 ```
