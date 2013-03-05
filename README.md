@@ -1,6 +1,21 @@
 CParse
 ======
-A C library to use the REST API at (parse.com)[http://parse.com].
+A C library to use the REST API at [parse.com](http://parse.com).
+
+
+Setup
+=====
+- Not required but [Homebrew](http://mxcl.github.com/homebrew/) is pretty handy for install libs
+- The build system uses [Premake](http://industriousone.com/premake) for cross platform compiling (OSX: brew install premake)
+- run 'premake4 gmake' or 'premake4 vs2010' depending on your environment, which will build the makefile or project file
+- run 'make' to compile the library and run the unit tests
+
+Dependencies
+============
+
+- libcurl for HTTP requests (should be already installed on OSX, otherwise 'brew install curl')
+- libjson for JSON parsing ('brew install json')
+- libcheck for unit testing ('brew install check')
 
 Example
 =======

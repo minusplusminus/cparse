@@ -33,7 +33,6 @@ typedef struct cparse_io_response CParseResponse;
 
 typedef struct cparse_io_request CParseRequest;
 
-
 CParseResponse *cparse_io_perform(CParseRequest *request);
 
 CParseRequest *cparse_request_new();

@@ -27,6 +27,7 @@ typedef struct cparse_object_background_arg
 
 } CParseObjectBackgroundArg;
 
+/* this is a background thread. The argument controlls functionality*/
 void *cparse_object_background_action(void *argument)
 {
     CParseError *error = NULL;
@@ -213,7 +214,7 @@ bool cparse_object_refresh(CParseObject *obj, CParseError **error)
     response = cparse_io_request_json(request, error);
 
     cparse_request_free(request);
-    
+
     if(error != NULL && *error != NULL)
     {
         return false;
@@ -398,7 +399,6 @@ void cparse_object_set_value(CParseObject * obj, const char* key, CParseValue *d
     if (obj->attr_size <= obj->attr_count)
         cparse_object_rehash(obj);
 
-
     hash = cparse_object_hash_key(key);
         
     do
@@ -572,6 +572,9 @@ long cparse_object_attribute_count(CParseObject * obj)
 void cparse_object_merge_attributes(CParseObject *a, CParseObject *b)
 {
 
+    /* objectId, createdAt, and updatedAt are special attributes
+     * we're remove them from the b if they exist and add them to a
+     */
     CParseValue *id = cparse_object_remove_attribute(b, "objectId");
 
     if(id != NULL)
