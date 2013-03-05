@@ -39,7 +39,7 @@ bool cparse_object_save(CParseObject *obj, CParseError **error);
 pthread_t cparse_object_save_in_background(CParseObject *obj, CParseObjectCallback callback);
 
 void cparse_object_delete(CParseObject *);
-void cparse_object_refresh(CParseObject *, CParseError **error);
+bool cparse_object_refresh(CParseObject *, CParseError **error);
 
 /* setters */
 void cparse_object_set_value(CParseObject *obj, const char *key, CParseValue *value);

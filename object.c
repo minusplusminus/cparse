@@ -15,8 +15,34 @@
 
 #define ACTIVE 1
 
-
 /* internals */
+
+/* for background threads */
+typedef struct cparse_object_background_arg
+{
+    CParseObject *obj;
+    CParseObjectCallback callback; /* the callback passed by user */
+    bool (*action)(CParseObject *obj, CParseError **error); /* the method to call in thread */
+    pthread_t thread;
+
+} CParseObjectBackgroundArg;
+
+void *cparse_object_background_action(void *argument)
+{
+    CParseError *error = NULL;
+    CParseObjectBackgroundArg *arg = (CParseObjectBackgroundArg*) argument;
+
+    /* cparse_object_save or cparse_object_refresh */
+    (*arg->action)(arg->obj, &error);
+
+    if(arg->callback) {
+        (*arg->callback)(arg->obj, error);
+    }
+
+    free(arg);
+
+    return NULL;
+}
 
 static unsigned long cparse_object_is_prime(long val)
 {
@@ -164,14 +190,14 @@ void cparse_object_free(CParseObject *obj) {
 
 /* io */
 
-void cparse_object_refresh(CParseObject *obj, CParseError **error)
+bool cparse_object_refresh(CParseObject *obj, CParseError **error)
 {
     CParseRequest *request;
     CParseObject *response;
     char buf[BUFSIZ+1];
 
     if(!obj->objectId || !*obj->objectId) {
-        return;
+        return false;
     }
 
     request = cparse_request_new();
@@ -188,11 +214,28 @@ void cparse_object_refresh(CParseObject *obj, CParseError **error)
 
     if(error != NULL && *error != NULL)
     {
-        return;
+        return false;
     }
 
     /* merge the response with the object */
     cparse_object_merge_attributes(obj, response);
+
+    return true;
+}
+
+pthread_t cparse_object_refresh_in_background(CParseObject *obj, CParseObjectCallback callback)
+{
+    assert(obj != NULL);
+    CParseObjectBackgroundArg *arg = malloc(sizeof(CParseObjectBackgroundArg));
+
+    arg->action = cparse_object_refresh;
+    arg->obj = obj;
+    arg->callback = callback;
+
+    int rc = pthread_create(&arg->thread, NULL, cparse_object_background_action, arg);
+    assert(rc == 0);
+
+    return arg->thread;
 }
 
 bool cparse_object_save(CParseObject *obj, CParseError **error)
@@ -235,38 +278,16 @@ bool cparse_object_save(CParseObject *obj, CParseError **error)
 	return true;
 }
 
-struct cparse_object_callback_arg
-{
-    CParseObject *obj;
-    CParseObjectCallback callback;
-    pthread_t thread;
-};
-
-void *cparse_object_save_in_background_callback(void *argument)
-{
-    CParseError *error = NULL;
-    struct cparse_object_callback_arg *arg = (struct cparse_object_callback_arg*) argument;
-
-    cparse_object_save(arg->obj, &error);
-
-    if(arg->callback) {
-        (*arg->callback)(arg->obj, error);
-    }
-
-    free(arg);
-
-    return NULL;
-}
-
 pthread_t cparse_object_save_in_background(CParseObject *obj, CParseObjectCallback callback)
 {
     assert(obj != NULL);
-    struct cparse_object_callback_arg *arg = malloc(sizeof(struct cparse_object_callback_arg));
+    CParseObjectBackgroundArg *arg = malloc(sizeof(CParseObjectBackgroundArg));
 
+    arg->action = cparse_object_save;
     arg->obj = obj;
     arg->callback = callback;
 
-    int rc = pthread_create(&arg->thread, NULL, cparse_object_save_in_background_callback, arg);
+    int rc = pthread_create(&arg->thread, NULL, cparse_object_background_action, arg);
     assert(rc == 0);
 
     return arg->thread;
