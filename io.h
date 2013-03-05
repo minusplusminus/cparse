@@ -38,6 +38,8 @@ CParseResponse *cparse_io_perform(CParseRequest *request);
 
 CParseRequest *cparse_request_new();
 
+void cparse_request_free(CParseRequest *request);
+
 CParseObject *cparse_io_request_json(CParseRequest *request, CParseError **error);
 
 #endif

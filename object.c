@@ -212,6 +212,8 @@ bool cparse_object_refresh(CParseObject *obj, CParseError **error)
     /* do the deed */
     response = cparse_io_request_json(request, error);
 
+    cparse_request_free(request);
+    
     if(error != NULL && *error != NULL)
     {
         return false;
@@ -267,6 +269,8 @@ bool cparse_object_save(CParseObject *obj, CParseError **error)
 
     /* do the deed */
 	response = cparse_io_request_json(request, error);
+
+    cparse_request_free(request);
 
 	if(error != NULL && *error != NULL) {
 		return false;

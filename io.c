@@ -26,6 +26,15 @@ CParseRequest *cparse_request_new()
     return request;
 };
 
+void cparse_request_free(CParseRequest *request)
+{
+    if(request->path)
+        free(request->path);
+    if(request->payload)
+        free(request->payload);
+
+    free(request);
+}
 
 static size_t cparse_io_get_response(void *ptr, size_t size, size_t nmemb, CParseResponse *s)
 {
