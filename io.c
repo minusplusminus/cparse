@@ -84,9 +84,9 @@ static void cparse_io_set_headers(CURL *curl)
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 }
 
-CParseObject *cparse_io_request_json(CParseRequest *request, CParseError **error)
+CParseObject *cparse_request_get_json(CParseRequest *request, CParseError **error)
 {
-    CParseResponse *response = cparse_io_perform(request);
+    CParseResponse *response = cparse_request_get_response(request);
 
     json_object *jobj = json_tokener_parse(response->text);
 
@@ -108,7 +108,7 @@ CParseObject *cparse_io_request_json(CParseRequest *request, CParseError **error
 
     return obj;
 }
-CParseResponse *cparse_io_perform(CParseRequest *request)
+CParseResponse *cparse_request_get_response(CParseRequest *request)
 {
     CURL *curl;
     CURLcode res;

@@ -33,12 +33,12 @@ typedef struct cparse_io_response CParseResponse;
 
 typedef struct cparse_io_request CParseRequest;
 
-CParseResponse *cparse_io_perform(CParseRequest *request);
+CParseResponse *cparse_request_get_response(CParseRequest *request);
 
 CParseRequest *cparse_request_new();
 
 void cparse_request_free(CParseRequest *request);
 
-CParseObject *cparse_io_request_json(CParseRequest *request, CParseError **error);
+CParseObject *cparse_request_get_json(CParseRequest *request, CParseError **error);
 
 #endif

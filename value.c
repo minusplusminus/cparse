@@ -459,6 +459,7 @@ CParseValue *cparse_value_from_json(json_object *jobj)
     }
     return value;
 }
+
 CParseArray *cparse_array_from_json(json_object *jarray)
 {
     size_t size = json_object_array_length(jarray);

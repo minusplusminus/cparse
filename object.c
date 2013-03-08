@@ -211,7 +211,7 @@ bool cparse_object_refresh(CParseObject *obj, CParseError **error)
     request->method = kCPRequestGet;
 
     /* do the deed */
-    response = cparse_io_request_json(request, error);
+    response = cparse_request_get_json(request, error);
 
     cparse_request_free(request);
 
@@ -269,7 +269,7 @@ bool cparse_object_save(CParseObject *obj, CParseError **error)
 	request->payload_size = cparse_object_to_json(obj, request->payload, 0);
 
     /* do the deed */
-	response = cparse_io_request_json(request, error);
+	response = cparse_request_get_json(request, error);
 
     cparse_request_free(request);
 
@@ -303,55 +303,55 @@ pthread_t cparse_object_save_in_background(CParseObject *obj, CParseObjectCallba
 void cparse_object_set_number(CParseObject *obj, const char *key, long long value)
 {
 	assert(obj != NULL);
-	assert(obj->attributes != NULL);
 
-	CParseValue v;
-	cparse_value_set_number(&v, value);
+	CParseValue *v = cparse_value_new();
 
-	cparse_object_set_value(obj, key, &v);
+	cparse_value_set_number(v, value);
+
+	cparse_object_set_value(obj, key, v);
 }
 
 void cparse_object_set_real(CParseObject *obj, const char *key, long double value)
 {
 	assert(obj != NULL);
-	assert(obj->attributes != NULL);
 
-	CParseValue v;
-	cparse_value_set_real(&v, value);
+	CParseValue *v = cparse_value_new();
 
-	cparse_object_set_value(obj, key, &v);
+	cparse_value_set_real(v, value);
+
+	cparse_object_set_value(obj, key, v);
 }
 void cparse_object_set_bool(CParseObject *obj, const char *key, bool value)
 {
     assert(obj != NULL);
-    assert(obj->attributes != NULL);
 
-    CParseValue v;
-    cparse_value_set_bool(&v, value);
+    CParseValue *v = cparse_value_new();
 
-    cparse_object_set_value(obj, key, &v);
+    cparse_value_set_bool(v, value);
+
+    cparse_object_set_value(obj, key, v);
 }
 
 void cparse_object_set_string(CParseObject *obj, const char *key, const char *value)
 {
 	assert(obj != NULL);
-	assert(obj->attributes != NULL);
 
-	CParseValue v;
-	cparse_value_set_string(&v, value);
+	CParseValue *v = cparse_value_new();
 
-	cparse_object_set_value(obj, key, &v);
+	cparse_value_set_string(v, value);
+
+	cparse_object_set_value(obj, key, v);
 }
 
 void cparse_object_set_object(CParseObject *obj, const char *key, CParseObject *value)
 {
 	assert(obj != NULL);
-	assert(obj->attributes != NULL);
 
-	CParseValue v;
-	cparse_value_set_object(&v, value);
+	CParseValue *v = cparse_value_new();
 
-	cparse_object_set_value(obj, key, &v);
+	cparse_value_set_object(v, value);
+
+	cparse_object_set_value(obj, key, v);
 }
 
 
@@ -412,14 +412,14 @@ void cparse_object_set_value(CParseObject * obj, const char* key, CParseValue *d
             {
                 if (obj->attributes[index].hash == hash)
                 {
-                    obj->attributes[index].value = cparse_value_copy(data);
+                    obj->attributes[index].value = data;
                     return;
                 }
             }
             else
             {
                 obj->attributes[index].flags |= ACTIVE;
-                obj->attributes[index].value = cparse_value_copy(data);
+                obj->attributes[index].value = data;
                 obj->attributes[index].hash = hash;
                 obj->attributes[index].key = strdup(key);
                 ++obj->attr_count;
@@ -457,6 +457,8 @@ CParseValue *cparse_object_remove_attribute(CParseObject * obj, const char* key)
                 if (obj->attributes[index].flags & ACTIVE)
                 {
                     obj->attributes[index].flags &= ~ACTIVE;
+                    if(obj->attributes[index].key)
+                        free(obj->attributes[index].key);
                     --obj->attr_count;
                     return obj->attributes[index].value;
                 }
