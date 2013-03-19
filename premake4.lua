@@ -2,7 +2,7 @@ newaction {
    trigger     = "indent",
    description = "Format source files",
    execute = function ()
-      os.execute("astyle -N -A1 -R '*.c' '*.h'");
+      os.execute("astyle -N -A1 -R '*.cpp' '*.h'");
    end
 }
 newaction {
@@ -53,9 +53,10 @@ end
 solution "cparse"
     configurations { "Debug", "Release" }
 
-    language "C"
+    language "C++"
 
-    buildoptions { "-Wall", "-Werror", "-std=c89", "-I." }
+    buildoptions { "-Wall", "-Werror", "-std=c++11", "-stdlib=libc++", "-I." }
+    linkoptions { "-stdlib=libc++" }
 
     configuration "Debug"
         flags "Symbols"
@@ -68,19 +69,19 @@ solution "cparse"
     project "cparse"
         kind "StaticLib"
         files {
-            "**.c",
+            "**.cpp",
             "**.h"
         }
         excludes {
-            "**.test.c"
+            "**.test.cpp"
         }
     
     project "cparsetest"
         kind "ConsoleApp"
         files {
-            "**.test.c"
+            "**.test.cpp"
         }
-        links { "cparse", "check", "curl", "json"}
+        links { "cparse", "curl", "json", "arg3json", "arg3format"}
         
         configuration "Debug"
             postbuildcommands {
