@@ -42,26 +42,3 @@ if(obj.save())
 /* Voila, we have saved an Example object */
 
 ```
-
-<!--
-Background Operations
-=====================
-```
-void my_nifty_callback(CParseObject *obj, CParseError *error)
-{
-	if(error) {
-		log(error);
-		return;
-	}
-
-	do_some_other_action_with_object(obj);
-}
-
-CParseObject *obj = cparse_object_new();
-
-cparse_object_set_string(obj, "main", "Hello, World");
-
-cparse_object_save_in_background(obj, my_nifty_callback);
-
-```
--->
