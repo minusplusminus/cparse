@@ -28,6 +28,14 @@ obj.set_int("age", 24);
 
 obj.set_double("money", 102.34);
 
+PFArray array;
+
+array.add_int(1234);
+
+array.add_str("4567");
+
+obj.set_array("numbers", array);
+
 if(obj.save())
 	cout << "Success!" << endl;
 
@@ -35,25 +43,6 @@ if(obj.save())
 
 ```
 
-Another Example
-===============
-```
-PFArray array;
-
-array.add_int(1234);
-
-array.add_str("4567");
-
-PFObject obj;
-
-obj.set_array("numbers", array);
-
-cout << obj.to_str() << endl;
-
-/* will print:
-{"numbers":[1234,"4567"]}
-*/
-```
 <!--
 Background Operations
 =====================
