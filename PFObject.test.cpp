@@ -82,23 +82,17 @@ Context(PFObjectTest)
 
 	    Assert::That(obj_->is_valid(), Equals(true));
 	}
-	/*
-	void test_cparse_object_callback(CParseObject *obj, CParseError *error)
+
+	Spec(testSaveInBackground)
 	{
-	    fail_unless(obj->objectId != NULL);
+	    obj_->set_int("score", 4567);
+
+	    obj_->set_str("status", "saved in background");
+
+	    std::thread thread = obj_->saveInBackground();
+
+	    thread.join();	
 	}
-
-	START_TEST(test_cparse_object_save_in_background)
-	{
-	    cparse_object_set_number(cp_obj, "score", 4567);
-
-	    cparse_object_set_string(cp_obj, "status", "saved in background");
-
-	    pthread_t thread = cparse_object_save_in_background(cp_obj, test_cparse_object_callback);
-
-	    pthread_join(thread, NULL);
-	}
-	END_TEST*/
 
 
 	Spec(testSetObjectForKey)

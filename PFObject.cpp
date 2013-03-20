@@ -225,5 +225,13 @@ namespace cparse
 
 		return true;
 	}
+
+	std::thread PFObject::saveInBackground(PFObjectCallback callback)
+	{
+		return std::thread([&](){ 
+			if(save() && callback != nullptr)
+				callback(this);
+		});
+	}
 }
 

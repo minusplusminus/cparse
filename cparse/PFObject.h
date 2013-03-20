@@ -4,12 +4,18 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <functional>
 #include <cparse/PFValue.h>
+#include <thread>
 
 using namespace arg3;
 
 namespace cparse
 {
+	class PFObject;
+
+	typedef std::function<void(PFObject*)> PFObjectCallback;
+
 	class PFObject
 	{
 	public:
@@ -49,6 +55,8 @@ namespace cparse
 
 		bool save();
 
+		std::thread saveInBackground(PFObjectCallback callback = nullptr);
+
 		std::string id() const;
 
 		time_t createdAt() const;
@@ -65,6 +73,7 @@ namespace cparse
 		time_t updatedAt_;
 		PFValue attributes_;
 	};
+
 
 }
 
