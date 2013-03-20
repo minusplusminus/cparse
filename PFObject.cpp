@@ -8,7 +8,7 @@ using namespace std;
 
 namespace cparse
 {
-	bool validate_class_name(const string &value) {
+	static bool validate_class_name(const string &value) {
 
 		/* check first char is an alpha char */
 		auto c = value.begin();

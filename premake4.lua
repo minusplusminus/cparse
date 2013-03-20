@@ -6,6 +6,23 @@ newaction {
    end
 }
 newaction {
+    trigger   = "release",
+    description = "builds a release",
+    execute = function()
+       if( os.isdir("bin")) then
+          error("You must run clean first")
+       end
+
+       if _ARGS[1] then
+         version = _ARGS[1]
+       else
+         version = "1.0"
+       end
+       os.execute("tar --exclude=legacy --exclude=cparse_"..version..".tar.gz -czf cparse_"..version..".tar.gz .");
+    end
+}
+
+newaction {
     trigger     = "install",
     description = "Install headers and lib",
     execute = function() 

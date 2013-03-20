@@ -1,3 +1,5 @@
 bin
 *.make
 obj
+.DS_Store
+Makefile
