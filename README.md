@@ -22,16 +22,18 @@ Example
 ```
 PFObject obj("Example");
 
+// add a string
 obj.set_str("name", "Harry Potter");
 
+// add an int
 obj.set_int("age", 24);
 
+// add a double
 obj.set_double("money", 102.34);
 
+// add an array
 PFArray array;
-
 array.add_int(1234);
-
 array.add_str("4567");
 
 obj.set_array("numbers", array);
@@ -39,6 +41,24 @@ obj.set_array("numbers", array);
 if(obj.save())
 	cout << "Success!" << endl;
 
-/* Voila, we have saved an Example object */
+/* Voila, we have saved an Example object on Parse.com */
+
+if(obj.destroy())
+	cout <<  "Deleted!" << endl;
 
 ```
+
+More Examples
+=============
+
+```
+// setup your app info
+Parse::set_application_id("AuIDhfjSJdiIFIFKDSJSJSY6KDKD8838");
+Parse::set_api_key("LdfhJjdudJDjDJJMmUfkfjjhd7d7ld8484mJJJ");
+
+std::thread thread = someObj->saveInBackground([&](PFObject *obj) {
+	cout << "Object Saved was " << obj->id() << endl;
+});
+
+thread.join();
+

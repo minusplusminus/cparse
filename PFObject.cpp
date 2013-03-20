@@ -205,7 +205,7 @@ namespace cparse
 			request.setMethod(kPFRequestPost);
 		}
 		else {
-			request.setPath(format("classes/%s/%s", className_, objectId_));
+			request.setPath(format("classes/{0}/{1}", className_, objectId_));
 
 			request.setMethod(kPFRequestPut);
 		}
@@ -226,12 +226,102 @@ namespace cparse
 		return true;
 	}
 
-	std::thread PFObject::saveInBackground(PFObjectCallback callback)
+	std::thread PFObject::saveInBackground(std::function<void(PFObject*)> callback)
 	{
 		return std::thread([&](){ 
 			if(save() && callback != nullptr)
 				callback(this);
 		});
 	}
+
+	bool PFObject::refresh()
+	{
+		PFRequest request;
+	    PFResponse response;
+
+	    if(objectId_.empty()) {
+	        return false;
+	    }
+
+	    request.setPath(format("classes/{0}/{1}", className_, objectId_));
+
+	    request.setMethod(kPFRequestGet);
+
+	    /* do the deed */
+	    try 
+	    {
+	    	response = request.getResponse();
+		}
+	    catch(const PFException &e)
+	    {
+	        return false;
+	    }
+
+	    /* merge the response with the object */
+	    merge(response.getValue());
+
+	    return true;
+	}
+
+	std::thread PFObject::refreshInBackground(std::function<void(PFObject*)> callback)
+	{
+		return std::thread([&]() {
+			if(refresh() && callback != nullptr)
+				callback(this);
+		});
+	}
+
+	bool PFObject::saveAll(std::vector<PFObject> objects)
+	{
+		bool success = true;
+
+		for(auto &obj : objects) {
+			success = success && obj.save();
+		}
+
+		return success;
+	}
+
+	std::thread PFObject::saveAllInBackground(std::vector<PFObject> objects, std::function<void()> callback)
+	{
+		return std::thread([&]() {
+			if(saveAll(objects) && callback != nullptr)
+				callback();
+		});
+	}
+
+	bool PFObject::destroy()
+	{
+		PFRequest request;
+
+	    if(objectId_.empty()) {
+	        return false;
+	    }
+
+	    request.setPath(format("classes/{0}/{1}", className_, objectId_));
+
+	    request.setMethod(kPFRequestDelete);
+
+	    /* do the deed */
+	    try 
+	    {
+	    	request.perform();
+		}
+	    catch(const PFException &e)
+	    {
+	        return false;
+	    }
+
+	    return true;
+	}
+
+	std::thread PFObject::destroyInBackground(std::function<void(PFObject*)> callback)
+	{
+		return std::thread([&]() {
+			if(destroy() && callback != nullptr)
+				callback(this);
+		});
+	}
+
 }
 

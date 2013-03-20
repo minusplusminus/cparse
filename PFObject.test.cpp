@@ -16,6 +16,8 @@ Context(PFObjectTest)
 {
 	PFObject *obj_;
 
+	bool backgroundSuccess_;
+
 	static void SetUpContext() 
 	{
 	    Parse::set_application_id("CODG0SmrNhqoZOheWT0Q4sATFvQTdZhzOjGA5OGb");
@@ -30,6 +32,7 @@ Context(PFObjectTest)
 
 	void TearDown()
 	{
+		obj_->destroy();
 		delete obj_;
 	}
 
@@ -89,9 +92,15 @@ Context(PFObjectTest)
 
 	    obj_->set_str("status", "saved in background");
 
-	    std::thread thread = obj_->saveInBackground();
+	    backgroundSuccess_ = false;
 
-	    thread.join();	
+	    std::thread thread = obj_->saveInBackground([&](PFObject *obj) {
+	    	backgroundSuccess_ = true;
+	    });
+
+	    thread.join();
+
+	    Assert::That(backgroundSuccess_, Equals(true));
 	}
 
 

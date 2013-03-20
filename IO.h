@@ -44,6 +44,7 @@ namespace cparse
 		PFRequest();
 		PFRequest(PFRequestMethod method, const string &path);
 		PFResponse getResponse() const;
+		void perform() const;
 		bool is_valid() const;
 		void setMethod(PFRequestMethod method);
 		void setPath(const string &path);

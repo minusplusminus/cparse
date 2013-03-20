@@ -83,6 +83,9 @@ namespace cparse
 	    return new_len;
 	}
 
+	void PFRequest::perform() const {
+		getResponse();
+	}
 
 	PFResponse PFRequest::getResponse() const
 	{

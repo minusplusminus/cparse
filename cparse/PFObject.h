@@ -14,14 +14,16 @@ namespace cparse
 {
 	class PFObject;
 
-	typedef std::function<void(PFObject*)> PFObjectCallback;
-
 	class PFObject
 	{
 	public:
 		static PFObject *objectWithClassName(const std::string &className);
 
 		static PFObject *objectWithClassName(const std::string &className, const PFValue &attributes);
+
+		static bool saveAll(std::vector<PFObject> objects);
+
+		static std::thread saveAllInBackground(std::vector<PFObject> objects, std::function<void()> callback = nullptr);
 
 		PFObject(const std::string &className);
 
@@ -54,8 +56,12 @@ namespace cparse
 		void add_array(const std::string &key, const PFArray& value);
 
 		bool save();
+		bool refresh();
+		bool destroy();
 
-		std::thread saveInBackground(PFObjectCallback callback = nullptr);
+		std::thread saveInBackground(std::function<void(PFObject*)> callback = nullptr);
+		std::thread refreshInBackground(std::function<void(PFObject*)> callback = nullptr);
+		std::thread destroyInBackground(std::function<void(PFObject*)> callback = nullptr);
 
 		std::string id() const;
 
