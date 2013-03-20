@@ -71,7 +71,6 @@ namespace cparse
 
 	protected:
 		void merge(PFValue attributes);
-
 	private:
 		std::string className_;
 		time_t createdAt_;

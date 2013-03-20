@@ -2,6 +2,7 @@
 #include <cparse/PFObject.h>
 #include <cparse/PFException.h>
 #include <igloo/igloo.h>
+#include <typeinfo>
 
 using namespace cparse;
 using namespace igloo;
@@ -129,4 +130,25 @@ Context(PFObjectTest)
 
 	}
 
+};
+
+class MySubclass : public PFObject
+{
+public:
+	MySubclass() : PFObject("MySubclass")
+	{
+
+	}
+};
+
+Context(PFSubclassTest)
+{
+	Spec(testInitializer)
+	{
+		MySubclass subclass;
+
+		subclass.set_int("val1", 5429);
+
+		Assert::That(subclass.save(), Equals(true));
+	}
 };
