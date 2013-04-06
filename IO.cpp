@@ -144,7 +144,7 @@ namespace cparse
 	    	throw PFException("reponse is not a valid response");
 
 	    if(obj.contains("error")) {
-	    	throw PFException(obj.get_str("error"));
+	    	throw PFException(obj.getString("error"));
 	    }
 
 	    return obj;

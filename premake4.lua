@@ -84,7 +84,7 @@ solution "cparse"
         buildoptions { "-O" }
     
     project "cparse"
-        kind "StaticLib"
+        kind "SharedLib"
         files {
             "**.cpp",
             "**.h"
@@ -92,13 +92,16 @@ solution "cparse"
         excludes {
             "**.test.cpp"
         }
+        links {
+            "arg3", "curl"
+        }
     
     project "cparsetest"
         kind "ConsoleApp"
         files {
             "**.test.cpp"
         }
-        links { "cparse", "curl", "json", "arg3json", "arg3format"}
+        links { "cparse", "arg3" }
         
         configuration "Debug"
             postbuildcommands {

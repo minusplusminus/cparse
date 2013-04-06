@@ -4,6 +4,8 @@ namespace cparse
 {
 	PFUser *PFUser::currentUser_ = NULL;
 
+	bool PFUser::automaticUser_ = false;
+
 	PFUser *PFUser::currentUser() {
 		if(currentUser_ == NULL && automaticUser_)
 		{
