@@ -14,7 +14,7 @@ Dependencies
 ============
 
 - libcurl for HTTP requests (should be already installed on OSX, otherwise 'brew install curl')
-- libjson for JSON parsing ('brew install json')
+- [libarg3](https://bitbucket.org/c0der78/arg3) for JSON parsing ('brew install arg3')
 - [igloo](http://igloo-testing.org) for unit testing
 
 Example

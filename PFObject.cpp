@@ -3,11 +3,15 @@
 #include <arg3/format/format.h>
 #include "IO.h"
 #include "Util.h"
+#include "Protocol.h"
 
 using namespace std;
 
 namespace cparse
 {
+
+    static const char *BASE_PATH = "classes";
+
     bool validate_class_name(const string &value)
     {
 
@@ -47,28 +51,32 @@ namespace cparse
             throw PFException("invalid class name");
     }
 
+    bool PFObject::isNew() const {
+        return objectId_.empty();
+    }
+
     void PFObject::merge(PFValue attributes)
     {
-        if (attributes.contains("objectId"))
+        if (attributes.contains(protocol::KEY_OBJECT_ID))
         {
-            objectId_ = attributes.getString("objectId");
+            objectId_ = attributes.getString(protocol::KEY_OBJECT_ID);
 
             // remove for the loop below
-            attributes.remove("objectId");
+            attributes.remove(protocol::KEY_OBJECT_ID);
         }
 
-        if (attributes.contains("createdAt"))
+        if (attributes.contains(protocol::KEY_CREATED_AT))
         {
-            createdAt_ = datetime(attributes.getString("createdAt"));
+            createdAt_ = datetime(attributes.getString(protocol::KEY_CREATED_AT));
 
-            attributes.remove("createdAt");
+            attributes.remove(protocol::KEY_CREATED_AT);
         }
 
-        if (attributes.contains("updatedAt"))
+        if (attributes.contains(protocol::KEY_UPDATED_AT))
         {
-            updatedAt_ = datetime(attributes.getString("updatedAt"));
+            updatedAt_ = datetime(attributes.getString(protocol::KEY_UPDATED_AT));
 
-            attributes.remove("updatedAt");
+            attributes.remove(protocol::KEY_UPDATED_AT);
         }
 
         for (auto & a : attributes)
@@ -208,13 +216,13 @@ namespace cparse
         /* build the request based on the id */
         if (objectId_.empty())
         {
-            request.setPath(format("classes/{0}", className_));
+            request.setPath(format("{0}/{1}", BASE_PATH, className_));
 
             request.setMethod(kPFRequestPost);
         }
         else
         {
-            request.setPath(format("classes/{0}/{1}", className_, objectId_));
+            request.setPath(format("{0}/{1}/{2}", BASE_PATH, className_, objectId_));
 
             request.setMethod(kPFRequestPut);
         }
@@ -256,7 +264,7 @@ namespace cparse
             return false;
         }
 
-        request.setPath(format("classes/{0}/{1}", className_, objectId_));
+        request.setPath(format("{0}/{1}/{2}", BASE_PATH, className_, objectId_));
 
         request.setMethod(kPFRequestGet);
 
@@ -317,7 +325,7 @@ namespace cparse
             return false;
         }
 
-        request.setPath(format("classes/{0}/{1}", className_, objectId_));
+        request.setPath(format("{0}/{1}/{2}", className_, objectId_));
 
         request.setMethod(kPFRequestDelete);
 
