@@ -12,75 +12,79 @@ using namespace arg3;
 
 namespace cparse
 {
-	class PFObject;
+    class PFObject;
 
-	class PFObject
-	{
-	public:
-		static PFObject *objectWithClassName(const std::string &className);
+    class PFObject
+    {
+    public:
+        static PFObject *create(const std::string &className);
 
-		static PFObject *objectWithClassName(const std::string &className, const PFValue &attributes);
+        static PFObject *create(const std::string &className, const PFValue &attributes);
 
-		static bool saveAll(std::vector<PFObject> objects);
+        static PFObject *createWithoutData(const std::string &className, const std::string &objectId);
 
-		static std::thread saveAllInBackground(std::vector<PFObject> objects, std::function<void()> callback = nullptr);
+        static bool saveAll(std::vector<PFObject> objects);
 
-		PFObject(const std::string &className);
+        static std::thread saveAllInBackground(std::vector<PFObject> objects, std::function<void()> callback = nullptr);
 
-		std::string keys() const;
+        PFObject(const std::string &className);
 
-		bool is_valid() const;
+        std::string keys() const;
 
-		PFValue get(const std::string &key) const;
-		int32_t getInt(const std::string &key) const;
-		int64_t getInt64(const std::string &key) const;
-		double getDouble(const std::string &key) const;
-		PFArray getArray(const std::string &key) const;
-		string getString(const std::string &key) const;
+        bool is_valid() const;
 
-		void set(const std::string &key, const PFValue &value);
-		void setInt(const std::string &key, int32_t value);
-		void setInt64(const std::string &key, int64_t value);
-		void setDouble(const std::string &key, double value);
-		void setString(const std::string &key, const std::string& value);
-		void setArray(const std::string &key, const PFArray& value);
+        PFValue get(const std::string &key) const;
+        int32_t getInt(const std::string &key) const;
+        int64_t getInt64(const std::string &key) const;
+        double getDouble(const std::string &key) const;
+        PFArray getArray(const std::string &key) const;
+        string getString(const std::string &key) const;
 
-		void remove(const std::string &key);
-		bool contains(const std::string &key) const;
+        void set(const std::string &key, const PFValue &value);
+        void setInt(const std::string &key, int32_t value);
+        void setInt64(const std::string &key, int64_t value);
+        void setDouble(const std::string &key, double value);
+        void setString(const std::string &key, const std::string &value);
+        void setArray(const std::string &key, const PFArray &value);
 
-		void add(const std::string &key, const PFValue &value);
-		void addInt(const std::string &key, int32_t value);
-		void addInt64(const std::string &key, int64_t value);
-		void addDouble(const std::string &key, double value);
-		void addString(const std::string &key, const std::string& value);
-		void addArray(const std::string &key, const PFArray& value);
+        void remove(const std::string &key);
+        bool contains(const std::string &key) const;
 
-		bool save();
-		bool fetch();
-		bool destroy();
+        void add(const std::string &key, const PFValue &value, bool unique = false);
+        void addInt(const std::string &key, int32_t value, bool unique = false);
+        void addInt64(const std::string &key, int64_t value, bool unique = false);
+        void addDouble(const std::string &key, double value, bool unique = false);
+        void addString(const std::string &key, const std::string &value, bool unique = false);
+        void addArray(const std::string &key, const PFArray &value, bool unique = false);
 
-		std::thread saveInBackground(std::function<void(PFObject*)> callback = nullptr);
-		std::thread fetchInBackground(std::function<void(PFObject*)> callback = nullptr);
-		std::thread destroyInBackground(std::function<void(PFObject*)> callback = nullptr);
+        bool save();
+        bool fetch();
+        bool destroy();
 
-		std::string id() const;
+        std::thread saveInBackground(std::function<void(PFObject *)> callback = nullptr);
+        std::thread fetchInBackground(std::function<void(PFObject *)> callback = nullptr);
+        std::thread destroyInBackground(std::function<void(PFObject *)> callback = nullptr);
 
-		time_t createdAt() const;
+        std::string id() const;
 
-		time_t updatedAt() const;
+        time_t createdAt() const;
 
-		bool isDataAvailable() const;
+        time_t updatedAt() const;
 
-	protected:
-		void merge(PFValue attributes);
-	private:
-		std::string className_;
-		time_t createdAt_;
-		std::string objectId_;
-		time_t updatedAt_;
-		PFValue attributes_;
-		bool dataAvailable_;
-	};
+        std::string className() const;
+
+        bool isDataAvailable() const;
+
+    protected:
+        void merge(PFValue attributes);
+    private:
+        std::string className_;
+        time_t createdAt_;
+        std::string objectId_;
+        time_t updatedAt_;
+        PFValue attributes_;
+        bool dataAvailable_;
+    };
 
 
 }

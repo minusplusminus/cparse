@@ -4,14 +4,15 @@
 namespace cparse
 {
 
-time_t datetime(const std::string &s)
-{
-	struct tm tp;
+    time_t datetime(const std::string &s)
+    {
+        struct tm tp;
 
-	strptime(s.c_str(), "%FT%T%z", &tp);
+        if (!strptime(s.c_str(), "%FT%T%z", &tp))
+            return 0;
 
-	return mktime(&tp);
-}
+        return mktime(&tp);
+    }
 
 }
 

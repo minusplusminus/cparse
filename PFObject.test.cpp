@@ -19,16 +19,9 @@ Context(PFObjectTest)
 
     bool backgroundSuccess_;
 
-    static void SetUpContext()
-    {
-        Parse::set_application_id("CODG0SmrNhqoZOheWT0Q4sATFvQTdZhzOjGA5OGb");
-
-        Parse::set_api_key("wXu2P8buzDdTq02mQgJkxrJz1TEHNgOvKtDTUuZ7");
-    }
-
     void SetUp()
     {
-        obj_ = PFObject::objectWithClassName("TestCase");
+        obj_ = PFObject::create("TestCase");
     }
 
     void TearDown()
@@ -52,7 +45,7 @@ Context(PFObjectTest)
         Assert::That(true, Equals(value));
     }
 
-    Spec(ObjectForKey)
+    Spec(get)
     {
         AssertThrows(cparse::PFException, obj_->get("testVal1"));
 
@@ -75,7 +68,7 @@ Context(PFObjectTest)
         Assert::That(bValue, Equals(obj_->get("testVal3")));
     }
 
-    Spec(test_cparse_object_save)
+    Spec(save)
     {
 
         obj_->setInt("score", 1234);
@@ -87,7 +80,7 @@ Context(PFObjectTest)
         Assert::That(obj_->is_valid(), Equals(true));
     }
 
-    Spec(testSaveInBackground)
+    Spec(saveInBackground)
     {
         obj_->setInt("score", 4567);
 
@@ -106,18 +99,21 @@ Context(PFObjectTest)
     }
 
 
-    Spec(testSetObjectForKey)
+    Spec(setInt)
     {
         obj_->setInt("id", 1234);
 
         Assert::That(obj_->getInt("id"), Equals(1234));
+    }
 
+    Spec(setString)
+    {
         obj_->setString("id", "replaced");
 
         Assert::That(obj_->getString("id"), Equals("replaced"));
     }
 
-    Spec(testRemoveObjectForKey)
+    Spec(remove)
     {
         PFValue value(1234);
 
@@ -142,13 +138,24 @@ public:
     }
 };
 
-Context(PFSubclassTest)
+Context(SubclassTest)
 {
-    Spec(testInitializer)
+    Spec(className)
     {
         MySubclass subclass;
 
-        subclass.setInt("val1", 5429);
+        Assert::That(subclass.className(), Equals("MySubclass"));
+    }
+
+    Spec(setInt)
+    {
+        MySubclass subclass;
+
+        int value = rand() % 1000 + 1;
+
+        subclass.setInt("val1", value);
+
+        Assert::That(subclass.getInt("val1"), Equals(value));
 
         Assert::That(subclass.save(), Equals(true));
     }

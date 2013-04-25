@@ -4,9 +4,9 @@
 #include <ctime>
 #include <string>
 
-namespace cparse 
+namespace cparse
 {
-	time_t datetime(const std::string &s);
+    time_t datetime(const std::string &s);
 
 }
 

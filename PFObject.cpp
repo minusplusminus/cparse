@@ -25,18 +25,27 @@ namespace cparse
         return true;
     }
 
-    PFObject *PFObject::objectWithClassName(const string &className)
+    PFObject *PFObject::create(const string &className)
     {
         PFObject *obj = new PFObject(className);
 
         return obj;
     }
 
-    PFObject *PFObject::objectWithClassName(const string &className, const PFValue &attributes)
+    PFObject *PFObject::create(const string &className, const PFValue &attributes)
     {
         PFObject *obj = new PFObject(className);
 
         obj->merge(attributes);
+
+        return obj;
+    }
+
+    PFObject *PFObject::createWithoutData(const string &className, const string &objectId)
+    {
+        PFObject *obj = new PFObject(className);
+
+        obj->objectId_ = objectId;
 
         return obj;
     }
@@ -170,34 +179,45 @@ namespace cparse
         return attributes_.contains(key);
     }
 
-    void PFObject::add(const string &key, const PFValue &value)
+    void PFObject::add(const string &key, const PFValue &value, bool unique)
     {
-        attributes_.add(key, value);
+        if (!unique || !attributes_.contains(key) || attributes_.get(key) != value)
+            attributes_.add(key, value);
     }
 
-    void PFObject::addInt(const string &key, int32_t value)
+    void PFObject::addInt(const string &key, int32_t value, bool unique)
     {
-        attributes_.addInt(key, value);
+        if (!unique || !attributes_.contains(key) || attributes_.getInt(key) != value)
+            attributes_.addInt(key, value);
     }
 
-    void PFObject::addInt64(const string &key, int64_t value)
+    void PFObject::addInt64(const string &key, int64_t value, bool unique)
     {
-        attributes_.addInt64(key, value);
+        if (!unique || !attributes_.contains(key) || attributes_.getInt64(key) != value)
+            attributes_.addInt64(key, value);
     }
 
-    void PFObject::addDouble(const string &key, double value)
+    void PFObject::addDouble(const string &key, double value, bool unique)
     {
-        attributes_.addDouble(key, value);
+        if (!unique || !attributes_.contains(key) || attributes_.getDouble(key) != value)
+            attributes_.addDouble(key, value);
     }
 
-    void PFObject::addString(const string &key, const string &value)
+    void PFObject::addString(const string &key, const string &value, bool unique)
     {
-        attributes_.addString(key, value);
+        if (!unique || !attributes_.contains(key) || attributes_.getString(key) != value)
+            attributes_.addString(key, value);
     }
 
-    void PFObject::addArray(const string &key, const PFArray &value)
+    void PFObject::addArray(const string &key, const PFArray &value, bool unique)
     {
-        attributes_.addArray(key, value);
+        if (!unique || !attributes_.contains(key) || attributes_.getArray(key) != value)
+            attributes_.addArray(key, value);
+    }
+
+    string PFObject::className() const
+    {
+        return className_;
     }
 
     bool PFObject::save()

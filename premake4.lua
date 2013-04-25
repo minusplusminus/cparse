@@ -96,6 +96,8 @@ solution "cparse"
             "arg3", "curl"
         }
     
+    configuration "Debug"
+    
     project "cparsetest"
         kind "ConsoleApp"
         files {
@@ -103,12 +105,8 @@ solution "cparse"
         }
         links { "cparse", "arg3" }
         
-        configuration "Debug"
-            postbuildcommands {
-              "./bin/debug/cparsetest"
-            }
-        configuration "Release"
-            postbuildcommands {
-              "./bin/release/cparsetest"
-            }
+        postbuildcommands {
+          "./bin/debug/cparsetest"
+        }
+
 

@@ -6,12 +6,12 @@
 
 namespace cparse
 {
-	class PFException : public std::logic_error
-	{
-	public:
-		PFException(const std::string &what) : std::logic_error(what)
-		{}
-	};
+    class PFException : public std::logic_error
+    {
+    public:
+        PFException(const std::string &what) : std::logic_error(what)
+        {}
+    };
 }
 
 #endif
