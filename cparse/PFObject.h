@@ -13,10 +13,12 @@ using namespace arg3;
 namespace cparse
 {
     class PFObject;
+    class PFUser;
 
     class PFObject
     {
     public:
+
         static PFObject *create(const std::string &className);
 
         static PFObject *create(const std::string &className, const PFValue &attributes);
@@ -28,6 +30,9 @@ namespace cparse
         static std::thread saveAllInBackground(std::vector<PFObject> objects, std::function<void()> callback = nullptr);
 
         PFObject(const std::string &className);
+        virtual ~PFObject();
+        PFObject(const PFObject &other);
+        PFObject &operator=(const PFObject &other);
 
         std::string keys() const;
 
@@ -39,6 +44,8 @@ namespace cparse
         double getDouble(const std::string &key) const;
         PFArray getArray(const std::string &key) const;
         string getString(const std::string &key) const;
+        PFObject *getObject(const std::string &key);
+        PFUser *getUser(const std::string &key);
 
         void set(const std::string &key, const PFValue &value);
         void setInt(const std::string &key, int32_t value);
@@ -46,6 +53,7 @@ namespace cparse
         void setDouble(const std::string &key, double value);
         void setString(const std::string &key, const std::string &value);
         void setArray(const std::string &key, const PFArray &value);
+        void setObject(const std::string &key, const PFObject &obj);
 
         void remove(const std::string &key);
         bool contains(const std::string &key) const;
@@ -60,6 +68,7 @@ namespace cparse
         bool save();
         bool fetch();
         bool destroy();
+        bool refresh();
 
         std::thread saveInBackground(std::function<void(PFObject *)> callback = nullptr);
         std::thread fetchInBackground(std::function<void(PFObject *)> callback = nullptr);
@@ -75,8 +84,13 @@ namespace cparse
 
         bool isDataAvailable() const;
 
+        bool isPointer(const string &key) const;
+
+        bool isNew() const;
+
     protected:
         void merge(PFValue attributes);
+        void copy_fetched(const PFObject &obj);
     private:
         std::string className_;
         time_t createdAt_;
@@ -84,6 +98,7 @@ namespace cparse
         time_t updatedAt_;
         PFValue attributes_;
         bool dataAvailable_;
+        map<std::string,PFObject*> fetched_;
     };
 
 

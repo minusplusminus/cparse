@@ -31,6 +31,10 @@ namespace cparse
 
         PFValue getValue() const;
 
+        string getString() const;
+
+        int code() const;
+
         friend size_t curl_append_response_callback(void *ptr, size_t size, size_t nmemb, PFResponse *s);
 
     private:

@@ -2,6 +2,8 @@
 #include <cparse/Parse.h>
 #include <cassert>
 #include <cparse/PFException.h>
+#include "Protocol.h"
+#include "PFLog.h"
 
 namespace cparse
 {
@@ -12,6 +14,9 @@ namespace cparse
     {
 
     }
+
+    PFRequest::PFRequest(PFRequestMethod method, const string &path) : path_(path), method_(method)
+    {}
 
     PFResponse::PFResponse() : code_(-1)
     {
@@ -42,18 +47,22 @@ namespace cparse
         return !path_.empty();
     }
 
+    int PFResponse::code() const {
+        return code_;
+    }
+
     void PFRequest::set_curl(CURL *curl) const
     {
         char buf[BUFSIZ + 1];
         struct curl_slist *headers = NULL;
 
-        snprintf(buf, BUFSIZ, "%s/%s/%s", Parse::domain, Parse::api_version, path_.c_str());
+        snprintf(buf, BUFSIZ, "https://%s/%s/%s", protocol::HOST, protocol::VERSION, path_.c_str());
 
         curl_easy_setopt(curl, CURLOPT_URL, buf);
 
         assert(!cparse_app_id_.empty() && !cparse_api_key_.empty());
 
-        snprintf(buf, BUFSIZ, "X-Parse-Application-Id: %s", cparse_app_id_.c_str());
+        snprintf(buf, BUFSIZ, "%s: %s", protocol::HEADER_APP_ID, cparse_app_id_.c_str());
 
         headers = curl_slist_append(headers, buf);
 
@@ -87,7 +96,16 @@ namespace cparse
 
     void PFRequest::perform() const
     {
-        getResponse();
+        PFResponse response = getResponse();
+
+        if(response.code() != protocol::HTTP_OK)
+        {
+            throw PFException("response is invalid");
+        }
+    }
+
+    string PFResponse::getString() const {
+        return text_;
     }
 
     PFResponse PFRequest::getResponse() const

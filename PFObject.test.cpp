@@ -13,6 +13,16 @@ namespace cparse
     bool validate_class_name(const string &value);
 }
 
+
+class MySubclass : public PFObject
+{
+public:
+    MySubclass() : PFObject("MySubclass")
+    {
+
+    }
+};
+
 Context(PFObjectTest)
 {
     PFObject *obj_;
@@ -127,14 +137,38 @@ Context(PFObjectTest)
 
     }
 
-};
 
-class MySubclass : public PFObject
-{
-public:
-    MySubclass() : PFObject("MySubclass")
+    Spec(fetch)
     {
+        MySubclass subclass;
 
+        subclass.setInt("val1", 1234);
+
+        Assert::That(subclass.save(), Equals(true));
+
+        obj_->setObject("sub", subclass);
+
+        Assert::That(obj_->save(), Equals(true));
+
+        PFObject *fetched = PFObject::createWithoutData(obj_->className(), obj_->id());
+
+        Assert::That(fetched->refresh(), Equals(true));
+
+        Assert::That(fetched->isDataAvailable(), Equals(true));
+
+        Assert::That(fetched->contains("sub"), Equals(true));
+
+        PFObject *sub = fetched->getObject("sub");
+
+        Assert::That(sub->isDataAvailable(), Equals(false));
+
+        Assert::That(sub->fetch(), Equals(true));
+
+        Assert::That(sub->isDataAvailable(), Equals(true));
+
+        Assert::That(subclass.destroy(), Equals(true));
+
+        delete fetched;
     }
 };
 
@@ -158,5 +192,7 @@ Context(SubclassTest)
         Assert::That(subclass.getInt("val1"), Equals(value));
 
         Assert::That(subclass.save(), Equals(true));
+
+        Assert::That(subclass.destroy(), Equals(true));
     }
 };

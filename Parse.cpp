@@ -12,9 +12,6 @@ namespace cparse
     bool cparse_offline_messages_;
     bool cparse_error_messages_;
 
-    const char *const Parse::domain = "https://api.parse.com";
-    const char *const Parse::api_version = "1";
-
     Parse::Parse()
     {
 

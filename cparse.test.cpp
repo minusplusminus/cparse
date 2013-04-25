@@ -2,6 +2,7 @@
 #include <cparse/Parse.h>
 #include <igloo/igloo.h>
 #include <fstream>
+#include "PFLog.h"
 
 using namespace cparse;
 using namespace igloo;
@@ -31,6 +32,15 @@ int main(void)
         Parse::set_api_key(config.getString("parseApiKey"));
     else
         die("No api key");
+
+    if(config.contains("logLevel"))
+    {
+        PFLog::level lev = PFLog::lookupLogLevel(config.getString("logLevel"));
+        PFLog::info("Setting log level " + std::to_string(lev));
+        PFLog::setMinLogLevel(lev);
+    }
+    else
+        die("no log level");
 
     return TestRunner::RunAllTests();
 }

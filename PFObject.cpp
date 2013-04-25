@@ -3,6 +3,9 @@
 #include <arg3/format/format.h>
 #include "IO.h"
 #include "Util.h"
+#include <cparse/PFUser.h>
+#include "Protocol.h"
+#include "PFLog.h"
 
 using namespace std;
 
@@ -50,34 +53,92 @@ namespace cparse
         return obj;
     }
 
-    PFObject::PFObject(const string &className) : className_(className)
+    PFObject::PFObject(const string &className) : className_(className),
+        createdAt_(0),
+        objectId_(),
+        updatedAt_(0),
+        attributes_(),
+        dataAvailable_(false)
     {
         if (!validate_class_name(className_))
             throw PFException("invalid class name");
     }
 
+    PFObject::PFObject(const PFObject &other) : className_(other.className_),
+        createdAt_(other.createdAt_),
+        objectId_(other.objectId_),
+        updatedAt_(other.updatedAt_),
+        attributes_(other.attributes_),
+        dataAvailable_(other.dataAvailable_)
+    {
+        copy_fetched(other);
+    }
+
+    PFObject::~PFObject() {
+        for(auto &e : fetched_)
+        {
+            if(e.second) {
+                PFLog::trace("deleting fetched object " + e.first);
+                delete e.second;
+            }
+        }
+    }
+
+    void PFObject::copy_fetched(const PFObject &obj)
+    {
+        for(auto &e : obj.fetched_) {
+            if(fetched_[e.first] != NULL) {
+                PFLog::trace("deleting fetched object " + e.first);
+                delete fetched_[e.first];
+            }
+            PFLog::trace("copying fetched object " + e.first);
+            fetched_[e.first] = new PFObject(*e.second);
+        }
+    }
+
+    PFObject &PFObject::operator=(const PFObject &other) {
+        if(this != &other) {
+            className_ = other.className_;
+            createdAt_ = other.createdAt_;
+            objectId_ = other.objectId_;
+            updatedAt_ = other.updatedAt_;
+            attributes_ = other.attributes_;
+            dataAvailable_ = other.dataAvailable_;
+
+            copy_fetched(other);
+        }
+
+        return *this;
+    }
+
+    bool PFObject::isNew() const {
+        return objectId_.empty();
+    }
+
     void PFObject::merge(PFValue attributes)
     {
-        if (attributes.contains("objectId"))
+        attributes.remove(protocol::KEY_CLASS_NAME);
+
+        if (attributes.contains(protocol::KEY_OBJECT_ID))
         {
-            objectId_ = attributes.getString("objectId");
+            objectId_ = attributes.getString(protocol::KEY_OBJECT_ID);
 
             // remove for the loop below
-            attributes.remove("objectId");
+            attributes.remove(protocol::KEY_OBJECT_ID);
         }
 
-        if (attributes.contains("createdAt"))
+        if (attributes.contains(protocol::KEY_CREATED_AT))
         {
-            createdAt_ = datetime(attributes.getString("createdAt"));
+            createdAt_ = datetime(attributes.getString(protocol::KEY_CREATED_AT));
 
-            attributes.remove("createdAt");
+            attributes.remove(protocol::KEY_CREATED_AT);
         }
 
-        if (attributes.contains("updatedAt"))
+        if (attributes.contains(protocol::KEY_UPDATED_AT))
         {
-            updatedAt_ = datetime(attributes.getString("updatedAt"));
+            updatedAt_ = datetime(attributes.getString(protocol::KEY_UPDATED_AT));
 
-            attributes.remove("updatedAt");
+            attributes.remove(protocol::KEY_UPDATED_AT);
         }
 
         for (auto & a : attributes)
@@ -139,6 +200,34 @@ namespace cparse
         return get(key).toArray();
     }
 
+    PFObject *PFObject::getObject(const string &key) {
+        if(fetched_.find(key) != fetched_.end())
+            return fetched_[key];
+
+        PFValue val = get(key);
+
+        if(!val.contains(protocol::KEY_TYPE) || val.getString(protocol::KEY_TYPE) != protocol::TYPE_POINTER)
+            return NULL;
+
+        PFLog::trace("creating fetched object " + key);
+        fetched_[key] = PFObject::create(val.getString(protocol::KEY_CLASS_NAME), val);
+
+        return fetched_[key];
+    }
+
+    bool PFObject::isPointer(const string &key) const {
+
+        PFValue val = get(key);
+
+        if(!val.contains(protocol::KEY_TYPE)) return false;
+
+        return val.getString(protocol::KEY_TYPE) == protocol::TYPE_POINTER;
+    }
+
+    PFUser *PFObject::getUser(const string &key) {
+        return static_cast<PFUser*>(fetched_[key]);
+    }
+
     void PFObject::set(const string &key, const PFValue &value)
     {
         attributes_.set(key, value);
@@ -169,6 +258,22 @@ namespace cparse
         attributes_.setArray(key, value);
     }
 
+    void PFObject::setObject(const string &key, const PFObject &obj)
+    {
+        PFValue value;
+        value.setString(protocol::KEY_TYPE, protocol::TYPE_POINTER);
+        value.setString(protocol::KEY_OBJECT_ID, obj.objectId_);
+        value.setString(protocol::KEY_CLASS_NAME, obj.className_);
+        attributes_.set(key, value);
+
+        if(fetched_[key] != NULL)
+        {
+            PFLog::trace("deleting fetched object " + key);
+            delete fetched_[key];
+        }
+        PFLog::trace("setting fetched object " + key);
+        fetched_[key] = new PFObject(obj);
+    }
     void PFObject::remove(const string &key)
     {
         attributes_.remove(key);
@@ -228,13 +333,13 @@ namespace cparse
         /* build the request based on the id */
         if (objectId_.empty())
         {
-            request.setPath(format("classes/{0}", className_));
+            request.setPath(format("{0}/{1}", protocol::OBJECTS_PATH, className_));
 
             request.setMethod(kPFRequestPost);
         }
         else
         {
-            request.setPath(format("classes/{0}/{1}", className_, objectId_));
+            request.setPath(format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
 
             request.setMethod(kPFRequestPut);
         }
@@ -244,7 +349,11 @@ namespace cparse
         /* do the deed */
         try
         {
+            PFLog::trace("saving: " + request.getPayload());
+
             response = request.getResponse();
+
+            PFLog::trace("saved: " + response.getString());
         }
         catch (const PFException &e)
         {
@@ -253,6 +362,8 @@ namespace cparse
 
         /* merge the result with the object */
         merge(response.getValue());
+
+        dataAvailable_ = true;
 
         return true;
     }
@@ -266,36 +377,71 @@ namespace cparse
         });
     }
 
-    bool PFObject::fetch()
+    bool PFObject::refresh()
     {
-        PFRequest request;
-        PFResponse response;
-
         if (objectId_.empty())
         {
             return false;
         }
 
-        request.setPath(format("classes/{0}/{1}", className_, objectId_));
+        PFRequest request(kPFRequestGet, format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
 
-        request.setMethod(kPFRequestGet);
+        PFResponse response;
 
-        /* do the deed */
         try
         {
             response = request.getResponse();
+
+            PFLog::trace("refresh: " + response.getString());
         }
-        catch (const PFException &e)
+        catch(const PFException &e) {
+            return false;
+        }
+
+        merge(response.getValue());
+
+        return (dataAvailable_ = true);
+    }
+
+    bool PFObject::fetch()
+    {
+        if (objectId_.empty())
         {
             return false;
         }
 
-        /* merge the response with the object */
+        if(!contains(protocol::KEY_TYPE))
+        {
+            return false;
+        }
+
+        string type = getString(protocol::KEY_TYPE);
+
+        if(type != protocol::TYPE_POINTER)
+        {
+            return false;
+        }
+
+        PFRequest request(kPFRequestGet, format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
+
+        PFResponse response;
+
+        try
+        {
+            response = request.getResponse();
+
+            PFLog::trace("fetch: " + response.getString());
+        }
+        catch(const PFException &e) {
+
+            PFLog::debug(e.what());
+            return false;
+        }
+
         merge(response.getValue());
 
-        dataAvailable_ = true;
+        return (dataAvailable_ = true);
 
-        return true;
     }
 
     std::thread PFObject::fetchInBackground(std::function<void(PFObject *)> callback)
@@ -337,7 +483,7 @@ namespace cparse
             return false;
         }
 
-        request.setPath(format("classes/{0}/{1}", className_, objectId_));
+        request.setPath(format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
 
         request.setMethod(kPFRequestDelete);
 
