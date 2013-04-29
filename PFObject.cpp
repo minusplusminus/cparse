@@ -6,6 +6,7 @@
 #include <cparse/PFUser.h>
 #include "Protocol.h"
 #include "PFLog.h"
+#include "PFClient.h"
 
 using namespace std;
 
@@ -327,41 +328,38 @@ namespace cparse
 
     bool PFObject::save()
     {
-        PFResponse response;
-        PFRequest request;
+        PFValue response;
 
-        /* build the request based on the id */
-        if (objectId_.empty())
-        {
-            request.setPath(format("{0}/{1}", protocol::OBJECTS_PATH, className_));
+        PFClient client;
 
-            request.setMethod(kPFRequestPost);
-        }
-        else
-        {
-            request.setPath(format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
+        client.setPayload(attributes_.toString());
 
-            request.setMethod(kPFRequestPut);
-        }
-
-        request.setPayload(attributes_.toString());
-
-        /* do the deed */
         try
         {
-            PFLog::trace("saving: " + request.getPayload());
+            /* build the request based on the id */
+            if (objectId_.empty())
+            {
+                client.post(format("{0}/{1}", protocol::OBJECTS_PATH, className_));
+            }
+            else
+            {
+                client.put(format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
+            }
 
-            response = request.getResponse();
+            PFLog::trace("saving: " + client.getPayload());
 
-            PFLog::trace("saved: " + response.getString());
+            response = client.getResponseValue();
+
+            PFLog::trace("saved: " + response.toString());
         }
-        catch (const PFException &e)
+        catch (const exception &e)
         {
+            PFLog::trace(e.what());
             return false;
         }
 
         /* merge the result with the object */
-        merge(response.getValue());
+        merge(response);
 
         dataAvailable_ = true;
 
@@ -384,21 +382,24 @@ namespace cparse
             return false;
         }
 
-        PFRequest request(kPFRequestGet, format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
-
-        PFResponse response;
+        PFClient client;
+        PFValue response;
 
         try
         {
-            response = request.getResponse();
 
-            PFLog::trace("refresh: " + response.getString());
+            client.get(format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
+
+            response = client.getResponseValue();
+
+            PFLog::trace("refresh: " + response.toString());
         }
-        catch(const PFException &e) {
+        catch(const exception &e) {
+            PFLog::trace(e.what());
             return false;
         }
 
-        merge(response.getValue());
+        merge(response);
 
         return (dataAvailable_ = true);
     }
@@ -422,23 +423,26 @@ namespace cparse
             return false;
         }
 
-        PFRequest request(kPFRequestGet, format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
+        PFClient client;
 
-        PFResponse response;
+        PFValue response;
 
         try
         {
-            response = request.getResponse();
 
-            PFLog::trace("fetch: " + response.getString());
+            client.get(format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
+
+            response = client.getResponseValue();
+
+            PFLog::trace("fetch: " + response.toString());
         }
-        catch(const PFException &e) {
+        catch(const exception &e) {
 
             PFLog::debug(e.what());
             return false;
         }
 
-        merge(response.getValue());
+        merge(response);
 
         return (dataAvailable_ = true);
 
@@ -476,24 +480,21 @@ namespace cparse
 
     bool PFObject::destroy()
     {
-        PFRequest request;
+        PFClient client;
 
         if (objectId_.empty())
         {
             return false;
         }
 
-        request.setPath(format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
-
-        request.setMethod(kPFRequestDelete);
-
         /* do the deed */
         try
         {
-            request.perform();
+            client.de1ete(format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
         }
-        catch (const PFException &e)
+        catch (const exception &e)
         {
+            PFLog::trace(e.what());
             return false;
         }
 
