@@ -1,6 +1,6 @@
-#include <cparse/Parse.h>
-#include <cparse/PFObject.h>
-#include <cparse/PFException.h>
+#include <cparse/parse.h>
+#include <cparse/object.h>
+#include <cparse/exception.h>
 #include <igloo/igloo.h>
 #include <typeinfo>
 
@@ -14,29 +14,29 @@ namespace cparse
 }
 
 
-class MySubclass : public PFObject
+class MySubclass : public Object
 {
 public:
-    MySubclass() : PFObject("MySubclass")
+    MySubclass() : Object("MySubclass")
     {
 
     }
 };
 
-Context(PFObjectTest)
+Context(ObjectTest)
 {
-    PFObject *obj_;
+    Object *obj_;
 
     bool backgroundSuccess_;
 
     void SetUp()
     {
-        obj_ = PFObject::create("TestCase");
+        obj_ = Object::create("TestCase");
     }
 
     void TearDown()
     {
-        obj_->destroy();
+        obj_->de1ete();
         delete obj_;
     }
 
@@ -57,21 +57,21 @@ Context(PFObjectTest)
 
     Spec(get)
     {
-        AssertThrows(cparse::PFException, obj_->get("testVal1"));
+        AssertThrows(cparse::Exception, obj_->get("testVal1"));
 
-        PFValue sValue("test string 1");
+        Value sValue("test string 1");
 
         obj_->set("testVal1", sValue);
 
         Assert::That(sValue, Equals(obj_->get("testVal1")));
 
-        PFValue iValue(1234567LL);
+        Value iValue(1234567LL);
 
         obj_->set("testVal2", iValue);
 
         Assert::That(iValue, Equals(obj_->get("testVal2")));
 
-        PFValue bValue(true);
+        Value bValue(true);
 
         obj_->set("testVal3", bValue);
 
@@ -98,7 +98,7 @@ Context(PFObjectTest)
 
         backgroundSuccess_ = false;
 
-        std::thread thread = obj_->saveInBackground([&](PFObject * obj)
+        std::thread thread = obj_->saveInBackground([&](Object * obj)
         {
             backgroundSuccess_ = true;
         });
@@ -125,7 +125,7 @@ Context(PFObjectTest)
 
     Spec(remove)
     {
-        PFValue value(1234);
+        Value value(1234);
 
         obj_->set("main", value);
 
@@ -150,7 +150,7 @@ Context(PFObjectTest)
 
         Assert::That(obj_->save(), Equals(true));
 
-        PFObject *fetched = PFObject::createWithoutData(obj_->className(), obj_->id());
+        Object *fetched = Object::createWithoutData(obj_->className(), obj_->id());
 
         Assert::That(fetched->refresh(), Equals(true));
 
@@ -158,17 +158,48 @@ Context(PFObjectTest)
 
         Assert::That(fetched->contains("sub"), Equals(true));
 
-        PFObject *sub = fetched->getObject("sub");
+        Object *sub = fetched->getObject("sub");
 
         Assert::That(sub->isDataAvailable(), Equals(false));
+
+        Assert::That(sub->contains("val1"), Equals(false));
 
         Assert::That(sub->fetch(), Equals(true));
 
         Assert::That(sub->isDataAvailable(), Equals(true));
 
-        Assert::That(subclass.destroy(), Equals(true));
+        Assert::That(sub->getInt("val1"), Equals(1234));
+
+        Assert::That(subclass.de1ete(), Equals(true));
 
         delete fetched;
+    }
+
+    Spec(equality)
+    {
+        Object obj2("TestCase");
+
+        Assert::That(*obj_ == obj2, Equals(false));
+
+        Assert::That(*obj_ == *obj_, Equals(true));
+
+        Assert::That(obj_->save(), Equals(true));
+
+        Assert::That(*obj_ == obj2, Equals(false));
+
+        Assert::That(obj2 == *obj_, Equals(false));
+
+        Assert::That(obj_->toPointer() == *obj_, Equals(true));
+
+        Assert::That(obj2.save(), Equals(true));
+
+        Assert::That(*obj_ == *obj_, Equals(true));
+
+        Assert::That(*obj_ == obj2, Equals(false));
+
+        Assert::That(obj_->toPointer() == *obj_, Equals(true));
+
+
     }
 };
 
@@ -193,6 +224,6 @@ Context(SubclassTest)
 
         Assert::That(subclass.save(), Equals(true));
 
-        Assert::That(subclass.destroy(), Equals(true));
+        Assert::That(subclass.de1ete(), Equals(true));
     }
 };

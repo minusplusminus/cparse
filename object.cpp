@@ -1,12 +1,11 @@
-#include <cparse/PFObject.h>
-#include <cparse/PFException.h>
+#include <cparse/object.h>
+#include <cparse/exception.h>
 #include <arg3/format/format.h>
-#include "IO.h"
-#include "Util.h"
-#include <cparse/PFUser.h>
-#include "Protocol.h"
-#include "PFLog.h"
-#include "PFClient.h"
+#include "util.h"
+#include <cparse/user.h>
+#include "protocol.h"
+#include "log.h"
+#include "client.h"
 
 using namespace std;
 
@@ -29,32 +28,32 @@ namespace cparse
         return true;
     }
 
-    PFObject *PFObject::create(const string &className)
+    Object *Object::create(const string &className)
     {
-        PFObject *obj = new PFObject(className);
+        Object *obj = new Object(className);
 
         return obj;
     }
 
-    PFObject *PFObject::create(const string &className, const PFValue &attributes)
+    Object *Object::create(const string &className, const Value &attributes)
     {
-        PFObject *obj = new PFObject(className);
+        Object *obj = new Object(className);
 
         obj->merge(attributes);
 
         return obj;
     }
 
-    PFObject *PFObject::createWithoutData(const string &className, const string &objectId)
+    Object *Object::createWithoutData(const string &className, const string &objectId)
     {
-        PFObject *obj = new PFObject(className);
+        Object *obj = new Object(className);
 
         obj->objectId_ = objectId;
 
         return obj;
     }
 
-    PFObject::PFObject(const string &className) : className_(className),
+    Object::Object(const string &className) : className_(className),
         createdAt_(0),
         objectId_(),
         updatedAt_(0),
@@ -62,10 +61,10 @@ namespace cparse
         dataAvailable_(false)
     {
         if (!validate_class_name(className_))
-            throw PFException("invalid class name");
+            throw Exception("invalid class name");
     }
 
-    PFObject::PFObject(const PFObject &other) : className_(other.className_),
+    Object::Object(const Object &other) : className_(other.className_),
         createdAt_(other.createdAt_),
         objectId_(other.objectId_),
         updatedAt_(other.updatedAt_),
@@ -75,29 +74,29 @@ namespace cparse
         copy_fetched(other);
     }
 
-    PFObject::~PFObject() {
+    Object::~Object() {
         for(auto &e : fetched_)
         {
             if(e.second) {
-                PFLog::trace("deleting fetched object " + e.first);
+                Log::trace("deleting fetched object " + e.first);
                 delete e.second;
             }
         }
     }
 
-    void PFObject::copy_fetched(const PFObject &obj)
+    void Object::copy_fetched(const Object &obj)
     {
         for(auto &e : obj.fetched_) {
             if(fetched_[e.first] != NULL) {
-                PFLog::trace("deleting fetched object " + e.first);
+                Log::trace("deleting fetched object " + e.first);
                 delete fetched_[e.first];
             }
-            PFLog::trace("copying fetched object " + e.first);
-            fetched_[e.first] = new PFObject(*e.second);
+            Log::trace("copying fetched object " + e.first);
+            fetched_[e.first] = new Object(*e.second);
         }
     }
 
-    PFObject &PFObject::operator=(const PFObject &other) {
+    Object &Object::operator=(const Object &other) {
         if(this != &other) {
             className_ = other.className_;
             createdAt_ = other.createdAt_;
@@ -112,11 +111,11 @@ namespace cparse
         return *this;
     }
 
-    bool PFObject::isNew() const {
+    bool Object::isNew() const {
         return objectId_.empty();
     }
 
-    void PFObject::merge(PFValue attributes)
+    void Object::merge(Value attributes)
     {
         attributes.remove(protocol::KEY_CLASS_NAME);
 
@@ -148,120 +147,120 @@ namespace cparse
         }
     }
 
-    bool PFObject::is_valid() const
+    bool Object::is_valid() const
     {
         return !objectId_.empty();
     }
 
-    string PFObject::id() const
+    string Object::id() const
     {
         return objectId_;
     }
 
-    time_t PFObject::createdAt() const
+    time_t Object::createdAt() const
     {
         return createdAt_;
     }
 
-    time_t PFObject::updatedAt() const
+    time_t Object::updatedAt() const
     {
         return updatedAt_;
     }
 
-    PFValue PFObject::get(const string &key) const
+    Value Object::get(const string &key) const
     {
         if (!attributes_.contains(key))
-            throw PFException(key + " not found.");
+            throw Exception(key + " not found.");
 
         return attributes_.get(key);
     }
 
-    int32_t PFObject::getInt(const string &key) const
+    int32_t Object::getInt(const string &key) const
     {
         return get(key).toInt();
     }
 
-    int64_t PFObject::getInt64(const string &key) const
+    int64_t Object::getInt64(const string &key) const
     {
         return get(key).toInt64();
     }
 
-    double PFObject::getDouble(const string &key) const
+    double Object::getDouble(const string &key) const
     {
         return get(key).toDouble();
     }
 
-    string PFObject::getString(const string &key) const
+    string Object::getString(const string &key) const
     {
         return get(key).toString();
     }
 
-    PFArray PFObject::getArray(const string &key) const
+    Array Object::getArray(const string &key) const
     {
         return get(key).toArray();
     }
 
-    PFObject *PFObject::getObject(const string &key) {
+    Object *Object::getObject(const string &key) {
         if(fetched_.find(key) != fetched_.end())
             return fetched_[key];
 
-        PFValue val = get(key);
+        Value val = get(key);
 
         if(!val.contains(protocol::KEY_TYPE) || val.getString(protocol::KEY_TYPE) != protocol::TYPE_POINTER)
             return NULL;
 
-        PFLog::trace("creating fetched object " + key);
-        fetched_[key] = PFObject::create(val.getString(protocol::KEY_CLASS_NAME), val);
+        Log::trace("creating fetched object " + key);
+        fetched_[key] = Object::create(val.getString(protocol::KEY_CLASS_NAME), val);
 
         return fetched_[key];
     }
 
-    bool PFObject::isPointer(const string &key) const {
+    bool Object::isPointer(const string &key) const {
 
-        PFValue val = get(key);
+        Value val = get(key);
 
         if(!val.contains(protocol::KEY_TYPE)) return false;
 
         return val.getString(protocol::KEY_TYPE) == protocol::TYPE_POINTER;
     }
 
-    PFUser *PFObject::getUser(const string &key) {
-        return static_cast<PFUser*>(fetched_[key]);
+    User *Object::getUser(const string &key) {
+        return static_cast<User*>(fetched_[key]);
     }
 
-    void PFObject::set(const string &key, const PFValue &value)
+    void Object::set(const string &key, const Value &value)
     {
         attributes_.set(key, value);
     }
 
-    void PFObject::setInt(const string &key, int32_t value)
+    void Object::setInt(const string &key, int32_t value)
     {
         attributes_.setInt(key, value);
     }
 
-    void PFObject::setInt64(const string &key, int64_t value)
+    void Object::setInt64(const string &key, int64_t value)
     {
         attributes_.setInt64(key, value);
     }
 
-    void PFObject::setDouble(const string &key, double value)
+    void Object::setDouble(const string &key, double value)
     {
         attributes_.setDouble(key, value);
     }
 
-    void PFObject::setString(const string &key, const string &value)
+    void Object::setString(const string &key, const string &value)
     {
         attributes_.setString(key, value);
     }
 
-    void PFObject::setArray(const string &key, const PFArray &value)
+    void Object::setArray(const string &key, const Array &value)
     {
         attributes_.setArray(key, value);
     }
 
-    void PFObject::setObject(const string &key, const PFObject &obj)
+    void Object::setObject(const string &key, const Object &obj)
     {
-        PFValue value;
+        Value value;
         value.setString(protocol::KEY_TYPE, protocol::TYPE_POINTER);
         value.setString(protocol::KEY_OBJECT_ID, obj.objectId_);
         value.setString(protocol::KEY_CLASS_NAME, obj.className_);
@@ -269,68 +268,68 @@ namespace cparse
 
         if(fetched_[key] != NULL)
         {
-            PFLog::trace("deleting fetched object " + key);
+            Log::trace("deleting fetched object " + key);
             delete fetched_[key];
         }
-        PFLog::trace("setting fetched object " + key);
-        fetched_[key] = new PFObject(obj);
+        Log::trace("setting fetched object " + key);
+        fetched_[key] = new Object(obj);
     }
-    void PFObject::remove(const string &key)
+    void Object::remove(const string &key)
     {
         attributes_.remove(key);
     }
 
-    bool PFObject::contains(const string &key) const
+    bool Object::contains(const string &key) const
     {
         return attributes_.contains(key);
     }
 
-    void PFObject::add(const string &key, const PFValue &value, bool unique)
+    void Object::add(const string &key, const Value &value, bool unique)
     {
         if (!unique || !attributes_.contains(key) || attributes_.get(key) != value)
             attributes_.add(key, value);
     }
 
-    void PFObject::addInt(const string &key, int32_t value, bool unique)
+    void Object::addInt(const string &key, int32_t value, bool unique)
     {
         if (!unique || !attributes_.contains(key) || attributes_.getInt(key) != value)
             attributes_.addInt(key, value);
     }
 
-    void PFObject::addInt64(const string &key, int64_t value, bool unique)
+    void Object::addInt64(const string &key, int64_t value, bool unique)
     {
         if (!unique || !attributes_.contains(key) || attributes_.getInt64(key) != value)
             attributes_.addInt64(key, value);
     }
 
-    void PFObject::addDouble(const string &key, double value, bool unique)
+    void Object::addDouble(const string &key, double value, bool unique)
     {
         if (!unique || !attributes_.contains(key) || attributes_.getDouble(key) != value)
             attributes_.addDouble(key, value);
     }
 
-    void PFObject::addString(const string &key, const string &value, bool unique)
+    void Object::addString(const string &key, const string &value, bool unique)
     {
         if (!unique || !attributes_.contains(key) || attributes_.getString(key) != value)
             attributes_.addString(key, value);
     }
 
-    void PFObject::addArray(const string &key, const PFArray &value, bool unique)
+    void Object::addArray(const string &key, const Array &value, bool unique)
     {
         if (!unique || !attributes_.contains(key) || attributes_.getArray(key) != value)
             attributes_.addArray(key, value);
     }
 
-    string PFObject::className() const
+    string Object::className() const
     {
         return className_;
     }
 
-    bool PFObject::save()
+    bool Object::save()
     {
-        PFValue response;
+        Value response;
 
-        PFClient client;
+        Client client;
 
         client.setPayload(attributes_.toString());
 
@@ -346,15 +345,15 @@ namespace cparse
                 client.put(format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
             }
 
-            PFLog::trace("saving: " + client.getPayload());
+            Log::trace("saving: " + client.getPayload());
 
             response = client.getResponseValue();
 
-            PFLog::trace("saved: " + response.toString());
+            Log::trace("saved: " + response.toString());
         }
         catch (const exception &e)
         {
-            PFLog::trace(e.what());
+            Log::trace(e.what());
             return false;
         }
 
@@ -366,7 +365,7 @@ namespace cparse
         return true;
     }
 
-    std::thread PFObject::saveInBackground(std::function<void(PFObject *)> callback)
+    std::thread Object::saveInBackground(std::function<void(Object *)> callback)
     {
         return std::thread([&]()
         {
@@ -375,15 +374,15 @@ namespace cparse
         });
     }
 
-    bool PFObject::refresh()
+    bool Object::refresh()
     {
         if (objectId_.empty())
         {
             return false;
         }
 
-        PFClient client;
-        PFValue response;
+        Client client;
+        Value response;
 
         try
         {
@@ -392,10 +391,10 @@ namespace cparse
 
             response = client.getResponseValue();
 
-            PFLog::trace("refresh: " + response.toString());
+            Log::trace("refresh: " + response.toString());
         }
         catch(const exception &e) {
-            PFLog::trace(e.what());
+            Log::trace(e.what());
             return false;
         }
 
@@ -404,7 +403,7 @@ namespace cparse
         return (dataAvailable_ = true);
     }
 
-    bool PFObject::fetch()
+    bool Object::fetch()
     {
         if (objectId_.empty())
         {
@@ -423,9 +422,9 @@ namespace cparse
             return false;
         }
 
-        PFClient client;
+        Client client;
 
-        PFValue response;
+        Value response;
 
         try
         {
@@ -434,11 +433,11 @@ namespace cparse
 
             response = client.getResponseValue();
 
-            PFLog::trace("fetch: " + response.toString());
+            Log::trace("fetch: " + response.toString());
         }
         catch(const exception &e) {
 
-            PFLog::debug(e.what());
+            Log::debug(e.what());
             return false;
         }
 
@@ -448,7 +447,7 @@ namespace cparse
 
     }
 
-    std::thread PFObject::fetchInBackground(std::function<void(PFObject *)> callback)
+    std::thread Object::fetchInBackground(std::function<void(Object *)> callback)
     {
         return std::thread([&]()
         {
@@ -457,7 +456,7 @@ namespace cparse
         });
     }
 
-    bool PFObject::saveAll(std::vector<PFObject> objects)
+    bool Object::saveAll(std::vector<Object> objects)
     {
         bool success = true;
 
@@ -469,7 +468,7 @@ namespace cparse
         return success;
     }
 
-    std::thread PFObject::saveAllInBackground(std::vector<PFObject> objects, std::function<void()> callback)
+    std::thread Object::saveAllInBackground(std::vector<Object> objects, std::function<void()> callback)
     {
         return std::thread([&]()
         {
@@ -478,9 +477,9 @@ namespace cparse
         });
     }
 
-    bool PFObject::destroy()
+    bool Object::de1ete()
     {
-        PFClient client;
+        Client client;
 
         if (objectId_.empty())
         {
@@ -494,26 +493,103 @@ namespace cparse
         }
         catch (const exception &e)
         {
-            PFLog::trace(e.what());
+            Log::trace(e.what());
             return false;
         }
 
         return true;
     }
 
-    std::thread PFObject::destroyInBackground(std::function<void(PFObject *)> callback)
+    std::thread Object::destroyInBackground(std::function<void(Object *)> callback)
     {
         return std::thread([&]()
         {
-            if (destroy() && callback != nullptr)
+            if (de1ete() && callback != nullptr)
                 callback(this);
         });
     }
 
-    bool PFObject::isDataAvailable() const
+    bool Object::isDataAvailable() const
     {
         return dataAvailable_;
     }
 
+    Pointer Object::toPointer() const
+    {
+        if(isNew())
+            throw Exception("object uninitialized");
+
+        return Pointer(*this);
+    }
+
+    bool Object::operator==(const Object &other) const
+    {
+        if(isNew())
+        {
+            return other.isNew() && this == &other;
+        }
+
+        return objectId_ == other.objectId_;
+    }
+
+    bool Object::operator!=(const Object &other) const
+    {
+        return !Object::operator==(other);
+    }
+
+    bool Object::operator==(const Pointer &other) const
+    {
+        if(isNew()) return false;
+
+        return objectId_ == other.id();
+    }
+
+    bool Object::operator!=(const Pointer &other) const
+    {
+        return !Object::operator==(other);
+    }
+
+    Pointer::Pointer(const Object &obj)
+    {
+        value_.setString(protocol::KEY_TYPE, protocol::TYPE_POINTER);
+
+        value_.setString(protocol::KEY_OBJECT_ID, obj.id());
+
+        value_.setString(protocol::KEY_CLASS_NAME, obj.className());
+
+    }
+
+    Value Pointer::toValue() const {
+        return value_;
+    }
+
+    string Pointer::id() const {
+        return value_.getString(protocol::KEY_OBJECT_ID);
+    }
+
+    string Pointer::className() const
+    {
+        return value_.getString(protocol::KEY_CLASS_NAME);
+    }
+
+    bool Pointer::operator==(const Pointer &other) const
+    {
+        return id() == other.id();
+    }
+
+    bool Pointer::operator!=(const Pointer &other) const
+    {
+        return !Pointer::operator==(other);
+    }
+
+    bool Pointer::operator==(const Object &other) const
+    {
+        return !other.isNew() && id() == other.id();
+    }
+
+    bool Pointer::operator!=(const Object &other) const
+    {
+        return !Pointer::operator==(other);
+    }
 }
 

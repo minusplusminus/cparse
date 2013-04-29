@@ -1,5 +1,5 @@
-#ifndef CPARSE_PARSE_H
-#define CPARSE_PARSE_H
+#ifndef ARG3_CPARSE_PARSE_H
+#define ARG3_CPARSE_PARSE_H
 
 #include <string>
 
@@ -8,6 +8,8 @@ namespace cparse
     class Parse
     {
     public:
+        static const char *const VERSION;
+
         static void set_application_id(const std::string &appId);
 
         static void set_api_key(const std::string &apiKey);

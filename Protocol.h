@@ -111,9 +111,6 @@ namespace cparse
 
         extern const char *const CLASS_INSTALLATION;
 
-        extern const char *const USER_LOGIN_URI;
-        extern const char *const PASSWORD_RESET_URI;
-
         extern const char *const CLOUD_FUNCTIONS_PATH;
 
         extern const char *const OBJECTS_PATH;

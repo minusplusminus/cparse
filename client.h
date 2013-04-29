@@ -1,16 +1,16 @@
 #include <arg3/net/restclient.h>
-#include <cparse/PFValue.h>
+#include <cparse/value.h>
 
 using arg3::net::http::Method;
 using arg3::net::RESTClient;
 
 namespace cparse
 {
-    class PFClient : public RESTClient
+    class Client : public RESTClient
     {
     public:
-        PFClient();
+        Client();
 
-        PFValue getResponseValue() const;
+        Value getResponseValue() const;
     };
 }

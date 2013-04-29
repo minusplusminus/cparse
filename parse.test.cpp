@@ -1,8 +1,8 @@
-#include <cparse/PFObject.h>
-#include <cparse/Parse.h>
+#include <cparse/object.h>
+#include <cparse/parse.h>
 #include <igloo/igloo.h>
 #include <fstream>
-#include "PFLog.h"
+#include "log.h"
 
 using namespace cparse;
 using namespace igloo;
@@ -16,10 +16,10 @@ void die(const char *message)
 
 int main(void)
 {
-    ifstream file("./cparse.test.json");
+    ifstream file("./parse.test.json");
 
     if (!file.is_open())
-        die("cparse.test.json not found");
+        die("parse.test.json not found");
 
     arg3::json::object config(file);
 
@@ -35,9 +35,9 @@ int main(void)
 
     if(config.contains("logLevel"))
     {
-        PFLog::level lev = PFLog::lookupLogLevel(config.getString("logLevel"));
-        PFLog::info("Setting log level " + std::to_string(lev));
-        PFLog::setMinLogLevel(lev);
+        Log::level lev = Log::lookupLogLevel(config.getString("logLevel"));
+        Log::info("Setting log level " + std::to_string(lev));
+        Log::setMinLogLevel(lev);
     }
     else
         die("no log level");

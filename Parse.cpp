@@ -1,4 +1,4 @@
-#include <cparse/Parse.h>
+#include <cparse/parse.h>
 #include <string>
 
 using namespace std;
@@ -11,6 +11,8 @@ namespace cparse
     string cparse_facebook_app_id_;
     bool cparse_offline_messages_;
     bool cparse_error_messages_;
+
+    const char *const Parse::VERSION = "1.0";
 
     Parse::Parse()
     {

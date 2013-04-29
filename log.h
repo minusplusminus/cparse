@@ -2,5 +2,5 @@
 
 namespace cparse
 {
-    typedef arg3::log PFLog;
+    typedef arg3::log Log;
 }

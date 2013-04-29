@@ -2,28 +2,29 @@
 #define ARG3_CPARSE_USER_H
 
 #include <string>
-#include "PFObject.h"
+#include "object.h"
 
 using namespace std;
 
 namespace cparse
 {
-    class PFUser : public PFObject
+    class User : public Object
     {
     public:
-        static PFUser *currentUser();
+        static User *currentUser();
         static void logout();
         static void enableAutomaticUser();
-        PFUser();
-        string username() const;
+        static User *authenticate(const string &username, const string &password);
+        User();
+        string getUsername() const;
         void setUsername( const string &value);
-        string email() const;
+        string getEmail() const;
         void setEmail(const string &value);
         string sessionToken() const;
         void setPassword(const string &value);
         bool isNew() const;
     private:
-        static PFUser *currentUser_;
+        static User *currentUser_;
 
         string username_;
         string password_;

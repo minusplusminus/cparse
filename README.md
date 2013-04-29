@@ -14,29 +14,29 @@ Dependencies
 ============
 
 - libcurl for HTTP requests (should be already installed on OSX, otherwise 'brew install curl')
-- [libarg3](https://bitbucket.org/c0der78/arg3) for JSON parsing ('brew install arg3')
+- [libarg3](http://github.com/c0der78/arg3) for JSON,REST IO,Formatting ('brew install arg3')
 - [igloo](http://igloo-testing.org) for unit testing
 
 Example
 =======
 ```
-PFObject obj("Example");
+Object obj("Example");
 
 // add a string
-obj.set_str("name", "Harry Potter");
+obj.setString("name", "Harry Potter");
 
 // add an int
-obj.set_int("age", 24);
+obj.setInt("age", 24);
 
 // add a double
-obj.set_double("money", 102.34);
+obj.setDouble("money", 102.34);
 
 // add an array
-PFArray array;
-array.add_int(1234);
-array.add_str("4567");
+Array array;
+array.addInt(1234);
+array.addStr("4567");
 
-obj.set_array("numbers", array);
+obj.setArray("numbers", array);
 
 if(obj.save())
 	cout << "Success!" << endl;
@@ -56,7 +56,7 @@ More Examples
 Parse::set_application_id("AuIDhfjSJdiIFIFKDSJSJSY6KDKD8838");
 Parse::set_api_key("LdfhJjdudJDjDJJMmUfkfjjhd7d7ld8484mJJJ");
 
-std::thread thread = someObj->saveInBackground([&](PFObject *obj) {
+std::thread thread = someObj->saveInBackground([&](Object *obj) {
 	cout << "Object Saved was " << obj->id() << endl;
 });
 

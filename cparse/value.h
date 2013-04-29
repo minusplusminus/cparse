@@ -5,9 +5,9 @@
 
 namespace cparse
 {
-    typedef arg3::json::object PFValue;
+    typedef arg3::json::object Value;
 
-    typedef arg3::json::array PFArray;
+    typedef arg3::json::array Array;
 }
 
 #endif

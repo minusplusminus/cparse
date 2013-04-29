@@ -68,9 +68,6 @@ namespace cparse
 
         extern const char *const CLASS_INSTALLATION = "_Installation";
 
-        extern const char *const USER_LOGIN_URI  = "/#{VERSION}/login";
-        extern const char *const PASSWORD_RESET_URI = "/#{VERSION}/requestPasswordReset";
-
         extern const char *const CLOUD_FUNCTIONS_PATH = "functions";
 
         extern const char *const OBJECTS_PATH = "classes";
