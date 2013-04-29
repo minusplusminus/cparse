@@ -121,24 +121,17 @@ namespace cparse
 
         if (attributes.contains(protocol::KEY_OBJECT_ID))
         {
-            objectId_ = attributes.getString(protocol::KEY_OBJECT_ID);
-
-            // remove for the loop below
-            attributes.remove(protocol::KEY_OBJECT_ID);
+            objectId_ = attributes.remove(protocol::KEY_OBJECT_ID);
         }
 
         if (attributes.contains(protocol::KEY_CREATED_AT))
         {
-            createdAt_ = datetime(attributes.getString(protocol::KEY_CREATED_AT));
-
-            attributes.remove(protocol::KEY_CREATED_AT);
+            createdAt_ = datetime(attributes.remove(protocol::KEY_CREATED_AT));
         }
 
         if (attributes.contains(protocol::KEY_UPDATED_AT))
         {
-            updatedAt_ = datetime(attributes.getString(protocol::KEY_UPDATED_AT));
-
-            attributes.remove(protocol::KEY_UPDATED_AT);
+            updatedAt_ = datetime(attributes.remove(protocol::KEY_UPDATED_AT));
         }
 
         for (auto & a : attributes)
@@ -514,12 +507,12 @@ namespace cparse
         return dataAvailable_;
     }
 
-    Pointer Object::toPointer() const
+    type::Pointer Object::toPointer() const
     {
         if(isNew())
             throw Exception("object uninitialized");
 
-        return Pointer(*this);
+        return type::Pointer(*this);
     }
 
     bool Object::operator==(const Object &other) const
@@ -537,59 +530,17 @@ namespace cparse
         return !Object::operator==(other);
     }
 
-    bool Object::operator==(const Pointer &other) const
+    bool Object::operator==(const type::Pointer &other) const
     {
         if(isNew()) return false;
 
         return objectId_ == other.id();
     }
 
-    bool Object::operator!=(const Pointer &other) const
+    bool Object::operator!=(const type::Pointer &other) const
     {
         return !Object::operator==(other);
     }
 
-    Pointer::Pointer(const Object &obj)
-    {
-        value_.setString(protocol::KEY_TYPE, protocol::TYPE_POINTER);
-
-        value_.setString(protocol::KEY_OBJECT_ID, obj.id());
-
-        value_.setString(protocol::KEY_CLASS_NAME, obj.className());
-
-    }
-
-    Value Pointer::toValue() const {
-        return value_;
-    }
-
-    string Pointer::id() const {
-        return value_.getString(protocol::KEY_OBJECT_ID);
-    }
-
-    string Pointer::className() const
-    {
-        return value_.getString(protocol::KEY_CLASS_NAME);
-    }
-
-    bool Pointer::operator==(const Pointer &other) const
-    {
-        return id() == other.id();
-    }
-
-    bool Pointer::operator!=(const Pointer &other) const
-    {
-        return !Pointer::operator==(other);
-    }
-
-    bool Pointer::operator==(const Object &other) const
-    {
-        return !other.isNew() && id() == other.id();
-    }
-
-    bool Pointer::operator!=(const Object &other) const
-    {
-        return !Pointer::operator==(other);
-    }
 }
 

@@ -23,6 +23,8 @@ namespace cparse
         string sessionToken() const;
         void setPassword(const string &value);
         bool isNew() const;
+    protected:
+        virtual void merge(Value value);
     private:
         static User *currentUser_;
 

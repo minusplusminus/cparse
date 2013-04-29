@@ -6,6 +6,7 @@
 #include <vector>
 #include <functional>
 #include "value.h"
+#include "type/pointer.h"
 #include <thread>
 
 using namespace arg3;
@@ -89,17 +90,17 @@ namespace cparse
 
         bool isNew() const;
 
-        Pointer toPointer() const;
+        type::Pointer toPointer() const;
 
         bool operator==(const Object &other) const;
         bool operator!=(const Object &other) const;
 
-        bool operator==(const Pointer &other) const;
-        bool operator!=(const Pointer &other) const;
+        bool operator==(const type::Pointer &other) const;
+        bool operator!=(const type::Pointer &other) const;
 
     protected:
-        void merge(Value attributes);
-        void copy_fetched(const Object &obj);
+        virtual void merge(Value attributes);
+        virtual void copy_fetched(const Object &obj);
     private:
         std::string className_;
         time_t createdAt_;
@@ -108,21 +109,6 @@ namespace cparse
         Value attributes_;
         bool dataAvailable_;
         map<std::string,Object*> fetched_;
-    };
-
-    class Pointer
-    {
-    public:
-        Pointer(const Object &obj);
-        Value toValue() const;
-        string id() const;
-        string className() const;
-        bool operator==(const Pointer &other) const;
-        bool operator!=(const Pointer &other) const;
-        bool operator==(const Object &other) const;
-        bool operator!=(const Object &other) const;
-    private:
-        Value value_;
     };
 }
 

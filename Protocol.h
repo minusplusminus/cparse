@@ -42,6 +42,8 @@ namespace cparse
 
         extern const char *const KEY_USER_SESSION_TOKEN;
 
+        extern const char *const KEY_USER_EMAIL;
+
         // The JSON key used in the top-level response object
         // to indicate that the response contains an array of objects.
         extern const char *const RESPONSE_KEY_RESULTS;

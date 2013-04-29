@@ -25,6 +25,8 @@ namespace cparse
 
         extern const char *const KEY_USER_SESSION_TOKEN = "sessionToken";
 
+        extern const char *const KEY_USER_EMAIL = "email";
+
         extern const char *const RESPONSE_KEY_RESULTS = "results";
         extern const char *const KEY_RESULTS = RESPONSE_KEY_RESULTS;
 

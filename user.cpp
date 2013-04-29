@@ -61,7 +61,7 @@ namespace cparse
 
         currentUser_->setPassword(password);
 
-        currentUser_->sessionToken_ = response.getString(protocol::KEY_USER_SESSION_TOKEN);
+        currentUser_->merge(response);
 
         return currentUser_;
     }
@@ -69,6 +69,21 @@ namespace cparse
     User::User() : Object(protocol::CLASS_USER)
     {
 
+    }
+
+    void User::merge(Value attributes)
+    {
+        Object::merge(attributes);
+
+        if (attributes.contains(protocol::KEY_USER_SESSION_TOKEN))
+        {
+            sessionToken_ = attributes.remove(protocol::KEY_USER_SESSION_TOKEN);
+        }
+
+        if(attributes.contains(protocol::KEY_USER_EMAIL))
+        {
+            email_ = attributes.remove(protocol::KEY_USER_EMAIL);
+        }
     }
 
     void User::enableAutomaticUser()
