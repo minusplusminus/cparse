@@ -8,26 +8,47 @@ namespace cparse
     namespace type
     {
 
-        Pointer::Pointer(const Object &obj)
+        Pointer::Pointer(const Object &obj) : className_(obj.className()), objectId_(obj.id())
         {
-            value_.setString(protocol::KEY_TYPE, protocol::TYPE_POINTER);
+        }
 
-            value_.setString(protocol::KEY_OBJECT_ID, obj.id());
+        Pointer::Pointer()
+        {
+        }
 
-            value_.setString(protocol::KEY_CLASS_NAME, obj.className());
+        Pointer::Pointer(const Value &obj)
+        {
+            fromValue(obj);
+        }
+
+        void Pointer::fromValue(const Value &obj)
+        {
+            if(obj.contains(protocol::KEY_CLASS_NAME))
+                className_ = obj.getString(protocol::KEY_CLASS_NAME);
+
+            if(obj.contains(protocol::KEY_OBJECT_ID))
+                objectId_ = obj.getString(protocol::KEY_OBJECT_ID);
         }
 
         Value Pointer::toValue() const {
-            return value_;
+            Value value;
+
+            value.setString(protocol::KEY_TYPE, protocol::TYPE_POINTER);
+
+            value.setString(protocol::KEY_CLASS_NAME, className_);
+
+            value.setString(protocol::KEY_OBJECT_ID, objectId_);
+
+            return value;
         }
 
         string Pointer::id() const {
-            return value_.getString(protocol::KEY_OBJECT_ID);
+            return objectId_;
         }
 
         string Pointer::className() const
         {
-            return value_.getString(protocol::KEY_CLASS_NAME);
+            return className_;
         }
 
         bool Pointer::operator==(const Pointer &other) const

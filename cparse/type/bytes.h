@@ -2,24 +2,31 @@
 #define ARG3_CPARSE_TYPE_BYTES_H_
 
 #include <string>
-#include <arg3/strings/strings.h>
-#include "../value.h"
+#include <arg3/string/string.h>
+#include "parsetype.h"
 
 namespace cparse
 {
     namespace type
     {
-        class Bytes
+        class Bytes : public ParseType
         {
         public:
+            typedef arg3::binary Type;
+
+            Bytes(const Type &data );
             Bytes(const Value &value);
+            Bytes();
 
             Value toValue() const;
+            void fromValue(const Value &attributes);
 
-            arg3::ustring getBytes() const;
+            Type getData() const;
+
+            void setData(const Type &value);
 
         private:
-            arg3::ustring value_;
+            Type value_;
         };
     }
 }

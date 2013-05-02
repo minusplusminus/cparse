@@ -1,7 +1,7 @@
 #ifndef ARG3_CPARSE_TYPE_GEOPOINT_H_
 #define ARG3_CPARSE_TYPE_GEOPOINT_H_
 
-#include "../value.h"
+#include "parsetype.h"
 
 namespace cparse
 {
@@ -10,6 +10,7 @@ namespace cparse
         class GeoPoint
         {
         public:
+            GeoPoint(const Value &attributes);
             GeoPoint(double lat, double lon);
             GeoPoint();
 
@@ -20,6 +21,7 @@ namespace cparse
             void setLongitude(double value);
 
             Value toValue() const;
+            void fromValue(const Value &attributes);
 
         private:
             double latitude_;

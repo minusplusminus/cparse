@@ -3,30 +3,33 @@
 
 #include <ctime>
 #include <string>
-#include "../value.h"
+#include "parsetype.h"
+
+using namespace std;
 
 namespace cparse
 {
     namespace type
     {
-        class Date
+        class Date : public ParseType
         {
         public:
-            Date(const std::string &date);
+            Date(const string &date);
             Date(time_t value);
             Date();
+            Date(const Value &obj);
 
             Value toValue() const;
+            void fromValue(const Value &attributes);
 
-            time_t getTime() const;
+            time_t getTimestamp() const;
 
-            string getTimeString() const;
+            string toString() const;
+
+            void fromString(const string &value);
 
         protected:
             static const char *const FORMAT;
-
-            static time_t convert(const std::string &value);
-
         private:
             time_t value_;
         };

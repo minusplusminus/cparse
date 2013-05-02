@@ -6,14 +6,14 @@ namespace cparse
 {
     namespace type
     {
-        time_t Date::convert(const std::string &s)
+        void Date::fromString(const std::string &s)
         {
             struct tm tp;
 
             if (!strptime(s.c_str(), FORMAT, &tp))
                 throw Exception("unable to convert time string");
 
-            return mktime(&tp);
+            value_ = mktime(&tp);
         }
 
         const char *const Date::FORMAT = "%FT%T%z";
@@ -24,24 +24,37 @@ namespace cparse
         Date::Date(time_t value) : value_(value)
         {}
 
-        Date::Date(const std::string &value) : value_(convert(value))
-        {}
+        Date::Date(const std::string &value)
+        {
+            fromString(value);
+        }
+
+        Date::Date(const Value &obj)
+        {
+            fromValue(obj);
+        }
+
+        void Date::fromValue(const Value &obj)
+        {
+            if(obj.contains("iso"))
+                fromString(obj.getString("iso"));
+        }
 
         Value Date::toValue() const {
             Value value;
 
             value.setString(protocol::KEY_TYPE, protocol::TYPE_DATE);
 
-            value.setString("iso", getTimeString());
+            value.setString("iso", toString());
 
             return value;
         }
 
-        time_t Date::getTime() const {
+        time_t Date::getTimestamp() const {
             return value_;
         }
 
-        std::string Date::getTimeString() const
+        std::string Date::toString() const
         {
             char buf[BUFSIZ+1] = {0};
 

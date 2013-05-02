@@ -10,6 +10,20 @@ namespace cparse
         GeoPoint::GeoPoint(double lat, double lon) : latitude_(lat), longitude_(lon)
         {}
 
+        GeoPoint::GeoPoint(const Value &obj)
+        {
+            fromValue(obj);
+        }
+
+        void GeoPoint::fromValue(const Value &obj)
+        {
+            if(obj.contains("latitude"))
+                latitude_ = obj.getDouble("latitude");
+
+            if(obj.contains("longitude"))
+                longitude_ = obj.getDouble("longitude");
+        }
+
         double GeoPoint::getLatitude() const
         {
             return latitude_;

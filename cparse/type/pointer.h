@@ -2,7 +2,7 @@
 #define ARG3_CPARSE_TYPE_POINTER_H_
 
 #include <string>
-#include "../value.h"
+#include "parsetype.h"
 
 namespace cparse
 {
@@ -10,19 +10,23 @@ namespace cparse
 
     namespace type
     {
-        class Pointer
+        class Pointer : public ParseType
         {
         public:
+            Pointer();
             Pointer(const Object &obj);
+            Pointer(const Value &attributes);
             Value toValue() const;
-            std::string id() const;
-            std::string className() const;
+            void fromValue(const Value &attributes);
+            string id() const;
+            string className() const;
             bool operator==(const Pointer &other) const;
             bool operator!=(const Pointer &other) const;
             bool operator==(const Object &other) const;
             bool operator!=(const Object &other) const;
         private:
-            Value value_;
+            string className_;
+            string objectId_;
         };
     }
 }
