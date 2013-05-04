@@ -19,6 +19,33 @@ namespace cparse
         {
         }
 
+        Bytes::~Bytes()
+        {}
+
+        Bytes::Bytes(const Bytes &value) : value_(value.value_)
+        {}
+
+        Bytes::Bytes(Bytes &&value) : value_(std::move(value.value_))
+        {}
+
+        Bytes &Bytes::operator=(const Bytes &a)
+        {
+            if(this != &a)
+            {
+                value_ = a.value_;
+            }
+            return *this;
+        }
+
+        Bytes &Bytes::operator=(Bytes &&a)
+        {
+            if(this != &a)
+            {
+                value_ = std::move(a.value_);
+            }
+            return *this;
+        }
+        
         void Bytes::fromValue(const Value &attributes)
         {
             if(attributes.contains("base64"))

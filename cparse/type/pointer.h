@@ -16,6 +16,11 @@ namespace cparse
             Pointer();
             Pointer(const Object &obj);
             Pointer(const Value &attributes);
+            virtual ~Pointer();
+            Pointer(const Pointer &value);
+            Pointer(Pointer &&value);
+            Pointer &operator=(const Pointer &value);
+            Pointer &operator=(Pointer &&value);
             Value toValue() const;
             void fromValue(const Value &attributes);
             string id() const;

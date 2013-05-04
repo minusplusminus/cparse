@@ -12,6 +12,11 @@ namespace cparse
         public:
             Decrement();
             Decrement(int value);
+            Decrement(const Decrement &value);
+            Decrement(Decrement &&value);
+            virtual ~Decrement();
+            Decrement &operator=(const Decrement &value);
+            Decrement &operator=(Decrement &&value);
 
             Value toValue() const;
 

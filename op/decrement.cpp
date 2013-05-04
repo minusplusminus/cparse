@@ -11,6 +11,33 @@ namespace cparse
         Decrement::Decrement(int value) : amount_(value)
         {}
 
+        Decrement::~Decrement()
+        {}
+
+        Decrement::Decrement(const Decrement &value) : amount_(value.amount_)
+        {}
+
+        Decrement::Decrement(Decrement &&value) : amount_(value.amount_)
+        {}
+
+        Decrement &Decrement::operator=(const Decrement &a)
+        {
+            if(this != &a)
+            {
+                amount_ = a.amount_;
+            }
+            return *this;
+        }
+
+        Decrement &Decrement::operator=(Decrement &&a)
+        {
+            if(this != &a)
+            {
+                amount_ = a.amount_;
+            }
+            return *this;
+        }
+
         int Decrement::getAmount() const
         {
             return amount_;

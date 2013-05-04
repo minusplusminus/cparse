@@ -19,6 +19,11 @@ namespace cparse
             File();
             File(const Value& obj);
             File(const string &fileName, const ContentType &content, const string &contentType);
+            File(const File &value);
+            File(File &&value);
+            virtual ~File();
+            File &operator=(const File &value);
+            File &operator=(File &&value);
 
             Value toValue() const;
             void fromValue(const Value &attributes);

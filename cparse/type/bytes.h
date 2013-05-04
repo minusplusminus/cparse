@@ -17,6 +17,11 @@ namespace cparse
             Bytes(const Type &data );
             Bytes(const Value &value);
             Bytes();
+            virtual ~Bytes();
+            Bytes(const Bytes &other);
+            Bytes(Bytes &&other);
+            Bytes &operator=(const Bytes &other);
+            Bytes &operator=(Bytes &&other);
 
             Value toValue() const;
             void fromValue(const Value &attributes);

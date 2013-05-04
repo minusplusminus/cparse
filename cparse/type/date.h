@@ -18,6 +18,11 @@ namespace cparse
             Date(time_t value);
             Date();
             Date(const Value &obj);
+            virtual ~Date();
+            Date(const Date &value);
+            Date(Date &&value);
+            Date &operator=(const Date &value);
+            Date &operator=(Date &&value);
 
             Value toValue() const;
             void fromValue(const Value &attributes);

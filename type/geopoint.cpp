@@ -15,6 +15,36 @@ namespace cparse
             fromValue(obj);
         }
 
+        GeoPoint::~GeoPoint()
+        {}
+
+        GeoPoint::GeoPoint(const GeoPoint &value) : latitude_(value.latitude_), longitude_(value.longitude_)
+        {}
+
+        GeoPoint::GeoPoint(GeoPoint &&value) : latitude_(value.latitude_), longitude_(value.longitude_)
+        {}
+
+        GeoPoint &GeoPoint::operator=(const GeoPoint &a)
+        {
+            if(this != &a)
+            {
+                latitude_ = a.latitude_;
+                longitude_ = a.longitude_;
+            }
+            return *this;
+        }
+
+        GeoPoint &GeoPoint::operator=(GeoPoint &&a)
+        {
+            if(this != &a)
+            {
+                latitude_ = a.latitude_;
+                longitude_ = a.longitude_;
+            }
+            return *this;
+        }
+        
+
         void GeoPoint::fromValue(const Value &obj)
         {
             if(obj.contains("latitude"))

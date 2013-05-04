@@ -1,6 +1,7 @@
 #include <cparse/object.h>
 #include <cparse/exception.h>
 #include <arg3/format/format.h>
+#include <arg3/string/string.h>
 #include "util.h"
 #include <cparse/user.h>
 #include "protocol.h"
@@ -74,11 +75,20 @@ namespace cparse
         copy_fetched(other);
     }
 
+    Object::Object(Object &&other) : className_(std::move(other.className_)),
+        createdAt_(other.createdAt_),
+        objectId_(std::move(other.objectId_)),
+        updatedAt_(other.updatedAt_),
+        attributes_(std::move(other.attributes_)),
+        dataAvailable_(other.dataAvailable_),
+        fetched_(std::move(other.fetched_))
+    { 
+    }
+
     Object::~Object() {
         for(auto &e : fetched_)
         {
             if(e.second) {
-                Log::trace("deleting fetched object " + e.first);
                 delete e.second;
             }
         }
@@ -88,10 +98,8 @@ namespace cparse
     {
         for(auto &e : obj.fetched_) {
             if(fetched_[e.first] != NULL) {
-                Log::trace("deleting fetched object " + e.first);
                 delete fetched_[e.first];
             }
-            Log::trace("copying fetched object " + e.first);
             fetched_[e.first] = new Object(*e.second);
         }
     }
@@ -106,6 +114,20 @@ namespace cparse
             dataAvailable_ = other.dataAvailable_;
 
             copy_fetched(other);
+        }
+
+        return *this;
+    }
+
+     Object &Object::operator=(Object &&other) {
+        if(this != &other) {
+            className_ = std::move(other.className_);
+            createdAt_ = other.createdAt_;
+            objectId_ = std::move(other.objectId_);
+            updatedAt_ = other.updatedAt_;
+            attributes_ = std::move(other.attributes_);
+            dataAvailable_ = other.dataAvailable_;
+            fetched_ = std::move(other.fetched_);
         }
 
         return *this;
@@ -126,12 +148,12 @@ namespace cparse
 
         if (attributes.contains(protocol::KEY_CREATED_AT))
         {
-            createdAt_ = datetime(attributes.remove(protocol::KEY_CREATED_AT));
+            createdAt_ = arg3::datetime(attributes.remove(protocol::KEY_CREATED_AT));
         }
 
         if (attributes.contains(protocol::KEY_UPDATED_AT))
         {
-            updatedAt_ = datetime(attributes.remove(protocol::KEY_UPDATED_AT));
+            updatedAt_ = arg3::datetime(attributes.remove(protocol::KEY_UPDATED_AT));
         }
 
         for (auto & a : attributes)
@@ -206,15 +228,6 @@ namespace cparse
         fetched_[key] = Object::create(val.getString(protocol::KEY_CLASS_NAME), val);
 
         return fetched_[key];
-    }
-
-    bool Object::isPointer(const string &key) const {
-
-        Value val = get(key);
-
-        if(!val.contains(protocol::KEY_TYPE)) return false;
-
-        return val.getString(protocol::KEY_TYPE) == protocol::TYPE_POINTER;
     }
 
     User *Object::getUser(const string &key) {

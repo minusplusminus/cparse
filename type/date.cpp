@@ -34,6 +34,34 @@ namespace cparse
             fromValue(obj);
         }
 
+        Date::~Date()
+        {}
+
+        Date::Date(const Date &value) : value_(value.value_)
+        {}
+
+        Date::Date(Date &&value) : value_(std::move(value.value_))
+        {}
+
+        Date &Date::operator=(const Date &a)
+        {
+            if(this != &a)
+            {
+                value_ = a.value_;
+            }
+            return *this;
+        }
+
+        Date &Date::operator=(Date &&a)
+        {
+            if(this != &a)
+            {
+                value_ = std::move(a.value_);
+            }
+            return *this;
+        }
+        
+
         void Date::fromValue(const Value &obj)
         {
             if(obj.contains("iso"))

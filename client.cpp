@@ -35,6 +35,31 @@ namespace cparse
         addHeader("User-Agent", format("libcparse-{0}", Parse::VERSION));
     }
 
+    Client::~Client()
+    {}
+
+    Client::Client(const Client &c) : RESTClient(c)
+    {}
+
+    Client::Client(Client &&c) : RESTClient(std::move(c))
+    {}
+
+    Client &Client::operator=(const Client &c)
+    {
+        if(this != &c) {
+            RESTClient::operator=(c);
+        }
+        return *this;
+    }
+
+    Client &Client::operator=(Client &&c)
+    {
+        if(this != &c) {
+            RESTClient::operator=(std::move(c));
+        }
+        return *this;
+    }
+
     Value Client::getResponseValue() const
     {
         Value obj;

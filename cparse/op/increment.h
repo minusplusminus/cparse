@@ -12,6 +12,11 @@ namespace cparse
         public:
             Increment();
             Increment(int value);
+            Increment(const Increment &value);
+            Increment(Increment &&value);
+            virtual ~Increment();
+            Increment &operator=(const Increment &value);
+            Increment &operator=(Increment &&value);
 
             Value toValue() const;
 

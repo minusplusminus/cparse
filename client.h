@@ -10,6 +10,11 @@ namespace cparse
     {
     public:
         Client();
+        virtual ~Client();
+        Client(const Client &c);
+        Client(Client &&c);
+        Client &operator=(const Client &c);
+        Client &operator=(Client &&c);
 
         Value getResponseValue() const;
     };

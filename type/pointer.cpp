@@ -21,6 +21,37 @@ namespace cparse
             fromValue(obj);
         }
 
+
+        Pointer::~Pointer()
+        {}
+
+        Pointer::Pointer(const Pointer &value) : className_(value.className_), objectId_(value.objectId_)
+        {}
+
+        Pointer::Pointer(Pointer &&value) : className_(std::move(value.className_)), objectId_(std::move(value.objectId_))
+        {}
+
+        Pointer &Pointer::operator=(const Pointer &a)
+        {
+            if(this != &a)
+            {
+                className_ = a.className_;
+                objectId_ = a.objectId_;
+            }
+            return *this;
+        }
+
+        Pointer &Pointer::operator=(Pointer &&a)
+        {
+            if(this != &a)
+            {
+                className_ = std::move(a.className_);
+                objectId_ = std::move(a.objectId_);
+            }
+            return *this;
+        }
+        
+
         void Pointer::fromValue(const Value &obj)
         {
             if(obj.contains(protocol::KEY_CLASS_NAME))

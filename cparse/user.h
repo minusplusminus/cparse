@@ -16,6 +16,11 @@ namespace cparse
         static void enableAutomaticUser();
         static User *authenticate(const string &username, const string &password);
         User();
+        User(const User &other);
+        User(User &&other);
+        virtual ~User();
+        User &operator=(const User &other);
+        User &operator=(User &&other);
         string getUsername() const;
         void setUsername( const string &value);
         string getEmail() const;

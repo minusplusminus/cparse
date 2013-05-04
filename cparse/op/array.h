@@ -15,6 +15,16 @@ namespace cparse
 
             Array();
 
+            Array(const Array &value);
+
+            Array(Array &&value);
+
+            virtual ~Array();
+
+            Array &operator=(const Array &value);
+
+            Array &operator=(Array &&value);
+
             Value toValue() const;
 
             void setOperation(const string &value);

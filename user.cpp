@@ -71,6 +71,40 @@ namespace cparse
 
     }
 
+    User::~User() {}
+
+    User::User(const User &u) : Object(u), username_(u.username_), password_(u.password_),
+        email_(u.email_), sessionToken_(u.sessionToken_), isNew_(u.isNew_)
+    {}
+
+    User::User(User &&u) : Object(std::move(u)), username_(std::move(u.username_)), password_(std::move(u.password_)),
+        email_(std::move(u.email_)), sessionToken_(std::move(u.sessionToken_)), isNew_(u.isNew_)
+    {}
+
+    User &User::operator=(const User &u) {
+        if(this != &u)
+        {
+            username_ = u.username_;
+            password_ = u.password_;
+            email_ = u.email_;
+            sessionToken_ = u.sessionToken_;
+            isNew_ = u.isNew_;
+        }
+        return *this;
+    }
+
+    User &User::operator=(User &&u) {
+        if(this != &u)
+        {
+            username_ = std::move(u.username_);
+            password_ = std::move(u.password_);
+            email_ = std::move(u.email_);
+            sessionToken_ = std::move(u.sessionToken_);
+            isNew_ = u.isNew_;
+        }
+        return *this;
+    }
+
     void User::merge(Value attributes)
     {
         Object::merge(attributes);

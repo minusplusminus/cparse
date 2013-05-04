@@ -24,7 +24,10 @@ namespace cparse
     private:
         Parse();
         Parse(const Parse &other);
+        Parse(Parse &&other);
+        ~Parse();
         Parse &operator=(const Parse &other);
+        Parse &operator=(Parse &&other);
     };
 
 }

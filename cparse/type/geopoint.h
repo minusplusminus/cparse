@@ -13,6 +13,11 @@ namespace cparse
             GeoPoint(const Value &attributes);
             GeoPoint(double lat, double lon);
             GeoPoint();
+            virtual ~GeoPoint();
+            GeoPoint(const GeoPoint &value);
+            GeoPoint(GeoPoint &&value);
+            GeoPoint &operator=(const GeoPoint &value);
+            GeoPoint &operator=(GeoPoint &&value);
 
             double getLatitude() const;
             double getLongitude() const;

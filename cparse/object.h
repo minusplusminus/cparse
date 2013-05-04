@@ -34,7 +34,9 @@ namespace cparse
         Object(const std::string &className);
         virtual ~Object();
         Object(const Object &other);
+        Object(Object &&other);
         Object &operator=(const Object &other);
+        Object &operator=(Object &&other);
 
         std::string keys() const;
 
@@ -85,8 +87,6 @@ namespace cparse
         std::string className() const;
 
         bool isDataAvailable() const;
-
-        bool isPointer(const string &key) const;
 
         bool isNew() const;
 

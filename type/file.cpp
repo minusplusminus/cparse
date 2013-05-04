@@ -21,6 +21,43 @@ namespace cparse
         File::File()
         {}
 
+        File::~File()
+        {}
+
+        File::File(const File &value) : localFileName_(value.localFileName_), parseFileName_(value.parseFileName_),
+            contentType_(value.contentType_), body_(value.body_), url_(value.url_)
+        {}
+
+        File::File(File &&value) : localFileName_(std::move(value.localFileName_)), parseFileName_(std::move(value.parseFileName_)),
+            contentType_(std::move(value.contentType_)), body_(std::move(value.body_)), url_(std::move(value.url_))
+        {}
+
+        File &File::operator=(const File &a)
+        {
+            if(this != &a)
+            {
+                localFileName_ = a.localFileName_;
+                parseFileName_ = a.parseFileName_;
+                contentType_ = a.contentType_;
+                body_ = a.body_;
+                url_ = a.url_;
+            }
+            return *this;
+        }
+
+        File &File::operator=(File &&a)
+        {
+            if(this != &a)
+            {
+                localFileName_ = std::move(a.localFileName_);
+                parseFileName_ = std::move(a.parseFileName_);
+                contentType_ = std::move(a.contentType_);
+                body_ = std::move(a.body_);
+                url_ = std::move(a.url_);
+            }
+            return *this;
+        }
+        
         void File::fromValue(const Value &obj)
         {
             if(obj.contains("local_filename"))
