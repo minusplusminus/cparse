@@ -7,15 +7,15 @@
 extern "C" {
 #endif
 
-struct cparse_error
-{
-	int code;
-	char *message;
-};
+    struct cparse_error
+    {
+        int code;
+        char *message;
+    };
 
-CParseError *cparse_error_new();
+    CParseError *cparse_error_new();
 
-void cparse_error_free(CParseError *error);
+    void cparse_error_free(CParseError *error);
 
 
 #ifdef __cplusplus

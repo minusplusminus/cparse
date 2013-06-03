@@ -18,23 +18,66 @@ static void cparse_test_setup()
 
 static void cparse_test_teardown()
 {
+    cparse_object_delete(cp_obj, NULL);
+
     cparse_object_free(cp_obj);
 }
 
 START_TEST(test_cparse_object_save)
 {
 
-	cparse_object_set_number(cp_obj, "score", 1234);
+    cparse_object_set_number(cp_obj, "score", 1234);
 
-	cparse_object_set_string(cp_obj, "name", "spok");
+    cparse_object_set_string(cp_obj, "name", "spok");
 
     CParseError *error = NULL;
 
-	cparse_object_save(cp_obj, &error);
+    cparse_object_save(cp_obj, &error);
 
     fail_unless(error == NULL);
 
     fail_unless(cp_obj->objectId != NULL);
+}
+END_TEST
+
+START_TEST(test_cparse_object_fetch)
+{
+    /* first create reference object */
+    CParseObject *obj = cparse_object_with_class_name("TestCase");
+
+    cparse_object_set_number(obj, "score", 1234);
+
+    cparse_object_set_string(obj, "name", "spok");
+
+    CParseError *error = NULL;
+
+    cparse_object_save(obj, &error);
+
+    fail_unless(error == NULL);
+
+    fail_unless(obj->objectId != NULL);
+
+    /* now set refrence on other object */
+
+    cparse_object_set_reference(cp_obj, "inner", obj);
+
+    CParseJSON *data = cparse_object_get(cp_obj, "inner");
+
+    cparse_object_save(cp_obj, &error);
+
+    fail_unless(error == NULL);
+
+    fail_unless(cparse_json_num_keys(data) == 3);
+
+    /* now fetch the reference */
+
+    cparse_object_fetch(cp_obj, &error);
+
+    fail_unless(error == NULL);
+
+    data = cparse_object_get(cp_obj, "inner");
+
+    fail_unless(cparse_json_num_keys(data) > 3);
 }
 END_TEST
 
@@ -125,6 +168,7 @@ Suite *cparse_object_suite (void)
     tcase_add_test(tc, test_cparse_object_remove_attribute);
     tcase_add_test(tc, test_cparse_object_to_json);
     tcase_add_test(tc, test_cparse_object_save_in_background);
+    tcase_add_test(tc, test_cparse_object_fetch);
     suite_add_tcase(s, tc);
 
     return s;

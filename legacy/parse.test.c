@@ -11,44 +11,44 @@ extern bool cparse_error_messages;
 
 static void cparse_test_setup()
 {
-   
+
 }
 
 static void cparse_test_teardown()
 {
-    
+
 }
 
 START_TEST(test_cparse_set_application_id)
 {
-	cparse_set_application_id("testId");
+    cparse_set_application_id("testId");
 
-	fail_unless(!strcmp(cparse_app_id, "testId") );
-    
+    fail_unless(!strcmp(cparse_app_id, "testId") );
+
 }
 END_TEST
 
 START_TEST(test_cparse_set_facebook_application_id)
-{	
-	cparse_set_facebook_application_id("testFacebookId");
+{
+    cparse_set_facebook_application_id("testFacebookId");
 
-	fail_unless(!strcmp(cparse_facebook_app_id, "testFacebookId"));
+    fail_unless(!strcmp(cparse_facebook_app_id, "testFacebookId"));
 }
 END_TEST
 
 START_TEST(test_cparse_offline_messages_enabled)
 {
-	cparse_offline_messages_enabled(true);
+    cparse_offline_messages_enabled(true);
 
-	fail_unless(cparse_offline_messages == true);
+    fail_unless(cparse_offline_messages == true);
 }
 END_TEST
 
 START_TEST(test_cparse_error_messages_enabled)
 {
-	cparse_error_messages_enabled(true);
+    cparse_error_messages_enabled(true);
 
-	fail_unless(cparse_error_messages == true);
+    fail_unless(cparse_error_messages == true);
 }
 END_TEST
 

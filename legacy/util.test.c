@@ -13,11 +13,11 @@ static void cparse_test_teardown()
 
 START_TEST(test_cparse_date_time)
 {
-	const char *testStr = "2011-08-20T02:06:57.931Z";
+    const char *testStr = "2011-08-20T02:06:57.931Z";
 
-	time_t value = cparse_date_time(testStr);
+    time_t value = cparse_date_time(testStr);
 
-	fail_unless(value == 1313831217);
+    fail_unless(value == 1313831217);
 }
 END_TEST
 

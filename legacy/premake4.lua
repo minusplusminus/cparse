@@ -75,7 +75,7 @@ solution "cparse"
             "**.test.c"
         }
         links {
-          "curl", "json"
+          "json", "curl"
         }
     
     project "cparsetest"

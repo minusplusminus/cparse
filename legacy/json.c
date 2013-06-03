@@ -19,19 +19,23 @@ CParseJSON *cparse_json_new_reference(CParseJSON *orig)
     return json_object_get(orig);
 }
 
-CParseJSON *cparse_json_new_number(long long value) {
+CParseJSON *cparse_json_new_number(long long value)
+{
     return json_object_new_int64(value);
 }
 
-CParseJSON *cparse_json_new_bool(bool value) {
+CParseJSON *cparse_json_new_bool(bool value)
+{
     return json_object_new_boolean(value);
 }
 
-CParseJSON *cparse_json_new_real(double value) {
+CParseJSON *cparse_json_new_real(double value)
+{
     return json_object_new_double(value);
 }
 
-CParseJSON *cparse_json_new_string(const char *value) {
+CParseJSON *cparse_json_new_string(const char *value)
+{
     return json_object_new_string(value);
 }
 
@@ -44,7 +48,7 @@ void cparse_json_copy(CParseJSON *orig, CParseJSON *other, bool replaceOnConflic
             json_object_object_del(orig, key);
         }
 
-        json_object_object_add(orig, key, val);
+        json_object_object_add(orig, key, json_object_get(val));
     }
 }
 
@@ -183,11 +187,13 @@ CParseJSONArray* cparse_json_array_get_array(CParseJSON *arr, size_t index)
     return json_object_get_array(value);
 }
 
-size_t cparse_json_array_size(CParseJSON *array) {
+size_t cparse_json_array_size(CParseJSON *array)
+{
     return json_object_array_length(array);
 }
 
-int cparse_json_num_keys(CParseJSON *obj) {
+int cparse_json_num_keys(CParseJSON *obj)
+{
     return json_object_get_object (obj)->count;
 }
 
@@ -230,6 +236,11 @@ const char *cparse_json_to_string(CParseJSON *v)
 json_type cparse_json_type(CParseJSON *v)
 {
     return json_object_get_type(v);
+}
+
+bool cparse_json_contains(CParseJSON *obj, const char *key)
+{
+    return json_object_object_get_ex(obj, key, NULL);
 }
 
 CParseJSONArray *cparse_json_to_array(CParseJSON *v)

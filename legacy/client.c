@@ -6,27 +6,30 @@
 #include <cparse/json.h>
 #include <cparse/object.h>
 #include <cparse/error.h>
-#include "io.h"
+#include "client.h"
+#include "protocol.h"
 
 const char *const cparse_domain = "https://api.parse.com";
 const char *const cparse_api_version = "1";
+
+extern const char *const cparse_lib_version;
 
 extern const char *cparse_api_key;
 
 extern const char *cparse_app_id;
 
-CParseRequest *cparse_request_new()
+CParseClientRequest *cparse_client_request_new()
 {
-    CParseRequest *request = malloc(sizeof(CParseRequest));
+    CParseClientRequest *request = malloc(sizeof(CParseClientRequest));
 
     request->path = NULL;
     request->payload = NULL;
-    request->method = kCPRequestGet;
+    request->method = kHTTPRequestGet;
 
     return request;
 };
 
-void cparse_request_free(CParseRequest *request)
+void cparse_client_request_free(CParseClientRequest *request)
 {
     if(request->path)
         free(request->path);
@@ -36,7 +39,15 @@ void cparse_request_free(CParseRequest *request)
     free(request);
 }
 
-static size_t cparse_io_get_response(void *ptr, size_t size, size_t nmemb, CParseResponse *s)
+void cparse_client_response_free(CParseClientResponse *response)
+{
+    if(response->size > 0 && response->text)
+        free(response->text);
+
+    free(response);
+}
+
+static size_t cparse_client_get_response(void *ptr, size_t size, size_t nmemb, CParseClientResponse *s)
 {
     assert(s != NULL);
 
@@ -54,7 +65,7 @@ static size_t cparse_io_get_response(void *ptr, size_t size, size_t nmemb, CPars
     return size * nmemb;
 }
 
-static void cparse_io_set_request_url(CURL *curl, const char *path)
+static void cparse_client_set_request_url(CURL *curl, const char *path)
 {
     char buf[BUFSIZ + 1];
 
@@ -63,7 +74,7 @@ static void cparse_io_set_request_url(CURL *curl, const char *path)
     curl_easy_setopt(curl, CURLOPT_URL, buf);
 }
 
-static void cparse_io_set_headers(CURL *curl)
+static void cparse_client_set_headers(CURL *curl)
 {
     assert(cparse_app_id != NULL);
 
@@ -71,28 +82,73 @@ static void cparse_io_set_headers(CURL *curl)
 
     struct curl_slist *headers = NULL;
 
-    snprintf(buf, BUFSIZ, "X-Parse-Application-Id: %s", cparse_app_id);
+    snprintf(buf, BUFSIZ, "%s: %s", HEADER_APP_ID, cparse_app_id);
 
     headers = curl_slist_append(headers, buf);
 
-    snprintf(buf, BUFSIZ, "X-Parse-REST-API-Key: %s", cparse_api_key);
+    snprintf(buf, BUFSIZ, "%s: %s", HEADER_API_KEY, cparse_api_key);
 
     headers = curl_slist_append(headers, buf);
 
     headers = curl_slist_append(headers, "Content-Type: application/json");
 
+    snprintf(buf, BUFSIZ, "User-Agent: libcparse-%s", cparse_lib_version);
+
+    headers = curl_slist_append(headers, buf);
+
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 }
 
-CParseJSON *cparse_request_get_json(CParseRequest *request, CParseError **error)
+void cparse_client_request_perform(CParseClientRequest *request, CParseError **error)
 {
-    CParseResponse *response = cparse_request_get_response(request);
+    CParseClientResponse *response = cparse_client_request_get_response(request);
 
     CParseJSON *obj = json_tokener_parse(response->text);
 
     const char *errorMessage = cparse_json_get_string(obj, "error");
 
-    if(errorMessage != NULL) {
+    cparse_client_response_free(response);
+
+    if(errorMessage != NULL)
+    {
+        *error = cparse_error_new();
+
+        (*error)->message = strdup(errorMessage);
+
+        (*error)->code = cparse_json_get_number(obj, "code");
+    }
+
+    cparse_json_free(obj);
+}
+
+CParseJSON *cparse_client_request_get_json(CParseClientRequest *request, CParseError **error)
+{
+    CParseClientResponse *response = cparse_client_request_get_response(request);
+
+    json_tokener *tok = json_tokener_new();
+
+    CParseJSON *obj = json_tokener_parse_ex(tok, response->text, response->size);
+
+    cparse_client_response_free(response);
+
+    const char *errorMessage = NULL;
+
+    enum json_tokener_error parseError = json_tokener_get_error(tok);
+
+    json_tokener_free(tok);
+
+    if(parseError != json_tokener_success)
+    {
+        errorMessage = json_tokener_error_desc(parseError);
+    }
+
+    else
+    {
+        errorMessage = cparse_json_get_string(obj, "error");
+    }
+
+    if(errorMessage != NULL)
+    {
         *error = cparse_error_new();
 
         (*error)->message = strdup(errorMessage);
@@ -106,11 +162,12 @@ CParseJSON *cparse_request_get_json(CParseRequest *request, CParseError **error)
 
     return obj;
 }
-CParseResponse *cparse_request_get_response(CParseRequest *request)
+
+CParseClientResponse *cparse_client_request_get_response(CParseClientRequest *request)
 {
     CURL *curl;
     CURLcode res;
-    CParseResponse *response;
+    CParseClientResponse *response;
 
     curl = curl_easy_init();
     if (curl == NULL)
@@ -119,33 +176,37 @@ CParseResponse *cparse_request_get_response(CParseRequest *request)
         return NULL;
     }
 
-    response = malloc(sizeof(CParseResponse));
+    response = malloc(sizeof(CParseClientResponse));
     response->text = NULL;
     response->code = 0;
     response->size = 0;
 
     switch (request->method)
     {
-    case kCPRequestPost:
+    case kHTTPRequestPost:
         curl_easy_setopt(curl, CURLOPT_POST, 1L);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, request->payload);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(request->payload));
         break;
-    case kCPRequestPut:
+    case kHTTPRequestPut:
         curl_easy_setopt(curl, CURLOPT_PUT, 1L);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, request->payload);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(request->payload));
         break;
-    case kCPRequestDelete:
+    case kHTTPRequestDelete:
         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
         break;
+    case kHTTPRequestGet:
+        curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
+
     default:
         break;
     }
 
-    cparse_io_set_request_url(curl, request->path);
-    cparse_io_set_headers(curl);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cparse_io_get_response);
+
+    cparse_client_set_request_url(curl, request->path);
+    cparse_client_set_headers(curl);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cparse_client_get_response);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
     res = curl_easy_perform(curl);
 
