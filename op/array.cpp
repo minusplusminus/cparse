@@ -4,7 +4,7 @@ namespace cparse
 {
     namespace op
     {
-        Array::Array(const string &op, const cparse::Array &objs)
+        Array::Array(const string &op, const JSONArray &objs)
             : operation_(op), objects_(objs)
         {}
 
@@ -45,7 +45,7 @@ namespace cparse
             operation_ = value;
         }
 
-        void Array::setObjects(const cparse::Array &objs)
+        void Array::setObjects(const JSONArray &objs)
         {
             objects_ = objs;
         }

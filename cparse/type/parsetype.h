@@ -1,7 +1,7 @@
 #ifndef ARG3_CPARSE_TYPE_BASE_H_
 #define ARG3_CPARSE_TYPE_BASE_H_
 
-#include "../value.h"
+#include "../json.h"
 
 namespace cparse
 {
@@ -10,8 +10,8 @@ namespace cparse
         class ParseType
         {
         public:
-            virtual Value toValue() const = 0;
-            virtual void fromValue(const Value &attributes) = 0;
+            virtual JSON toJSON() const = 0;
+            virtual void fromJSON(const JSON &attributes) = 0;
         };
     }
 }

@@ -16,9 +16,9 @@ namespace cparse
         {
         }
 
-        Pointer::Pointer(const Value &obj)
+        Pointer::Pointer(const JSON &obj)
         {
-            fromValue(obj);
+            fromJSON(obj);
         }
 
 
@@ -50,9 +50,9 @@ namespace cparse
             }
             return *this;
         }
-        
 
-        void Pointer::fromValue(const Value &obj)
+
+        void Pointer::fromJSON(const JSON &obj)
         {
             if(obj.contains(protocol::KEY_CLASS_NAME))
                 className_ = obj.getString(protocol::KEY_CLASS_NAME);
@@ -61,8 +61,8 @@ namespace cparse
                 objectId_ = obj.getString(protocol::KEY_OBJECT_ID);
         }
 
-        Value Pointer::toValue() const {
-            Value value;
+        JSON Pointer::toJSON() const {
+            JSON value;
 
             value.setString(protocol::KEY_TYPE, protocol::TYPE_POINTER);
 

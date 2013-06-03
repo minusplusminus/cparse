@@ -1,9 +1,13 @@
 #ifndef CPARSE_USER_H_
 #define CPARSE_USER_H_
 
-#include <stdbool.h>
 #include <cparse/defines.h>
 #include <cparse/query.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct cparse_user
 {
@@ -25,5 +29,10 @@ void cparse_user_login_in_background(const char *username, const char *password,
 void cparse_user_logout();
 
 CParseQuery *cparse_user_query();
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -10,9 +10,9 @@ namespace cparse
         GeoPoint::GeoPoint(double lat, double lon) : latitude_(lat), longitude_(lon)
         {}
 
-        GeoPoint::GeoPoint(const Value &obj)
+        GeoPoint::GeoPoint(const JSON &obj)
         {
-            fromValue(obj);
+            fromJSON(obj);
         }
 
         GeoPoint::~GeoPoint()
@@ -43,9 +43,9 @@ namespace cparse
             }
             return *this;
         }
-        
 
-        void GeoPoint::fromValue(const Value &obj)
+
+        void GeoPoint::fromJSON(const JSON &obj)
         {
             if(obj.contains("latitude"))
                 latitude_ = obj.getDouble("latitude");
@@ -74,9 +74,9 @@ namespace cparse
             longitude_ = value;
         }
 
-        Value GeoPoint::toValue() const
+        JSON GeoPoint::toJSON() const
         {
-            Value value;
+            JSON value;
 
             value.setString(protocol::KEY_TYPE, protocol::TYPE_GEOPOINT);
 

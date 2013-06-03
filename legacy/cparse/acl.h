@@ -1,8 +1,11 @@
 #ifndef CPARSE_ACL_H_
 #define CPARSE_ACL_H_
 
-#include <stdbool.h>
 #include <cparse/defines.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct cparse_acl
 {
@@ -21,5 +24,10 @@ CParseACL *cparse_acl_copy(CParseACL *other);
 void cparse_set_default_acl(CParseACL *acl, bool currentUserAccess);
 
 void cparse_acl_free(CParseACL *acl);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

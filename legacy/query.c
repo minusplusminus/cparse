@@ -6,11 +6,11 @@ void cparse_query_clear_all_caches() {
 
 }
 
-static CParseQuery *cparse_query_new()
+CParseQuery *cparse_query_new()
 {
 	CParseQuery *query = malloc(sizeof(CParseQuery));
 
-	query->cachePolicy = kCPCachePolicyIgnoreCache;
+	query->cachePolicy = kCParseCachePolicyIgnoreCache;
 	query->className = NULL;
 	query->limit = 0;
 	query->skip = 0;

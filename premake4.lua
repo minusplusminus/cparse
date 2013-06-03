@@ -84,7 +84,7 @@ solution "cparse"
         buildoptions { "-O" }
     
     project "cparse"
-        kind "SharedLib"
+        kind "StaticLib"
         files {
             "**.cpp",
             "**.h"
@@ -96,8 +96,6 @@ solution "cparse"
             "arg3", "curl"
         }
     
-    configuration "Debug"
-    
     project "cparsetest"
         kind "ConsoleApp"
         files {
@@ -105,6 +103,7 @@ solution "cparse"
         }
         links { "cparse", "arg3" }
         
+    configuration "Debug"
         postbuildcommands {
           "./bin/debug/cparsetest"
         }

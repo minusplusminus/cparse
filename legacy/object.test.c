@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <cparse/object.h>
 #include <cparse/parse.h>
-#include <cparse/value.h>
+#include <cparse/json.h>
+#include <cparse/error.h>
 
 CParseObject *cp_obj = NULL;
 
@@ -59,9 +60,9 @@ START_TEST(test_cparse_object_set_value)
 {
     cparse_object_set_number(cp_obj, "id", 1234);
 
-    fail_unless(cparse_object_attribute_count(cp_obj) == 1);
+    fail_unless(cparse_object_attributes(cp_obj) == 1);
 
-    fail_unless(cparse_object_get_number(cp_obj, "id", 0) == 1234);
+    fail_unless(cparse_object_get_number(cp_obj, "id") == 1234);
 }
 END_TEST
 
@@ -71,42 +72,41 @@ START_TEST(test_cparse_object_count_attributes)
 
     cparse_object_set_real(cp_obj, "testreal", 1234.5678);
 
-    fail_unless(cparse_object_attribute_count(cp_obj) == 2);
+    fail_unless(cparse_object_attributes(cp_obj) == 2);
 }
 END_TEST
 
 START_TEST(test_cparse_object_remove_attribute)
 {
-    CParseValue value;
+    CParseJSON *value = cparse_json_new_string("1234");
 
-    cparse_value_set_string(&value, "1234");
+    cparse_object_set(cp_obj, "main", value);
 
-    cparse_object_set_value(cp_obj, "main", &value);
+    fail_unless(cparse_object_attributes(cp_obj) == 1);
 
-    fail_unless(cparse_object_attribute_count(cp_obj) == 1);
+    CParseJSON *removed = cparse_object_remove(cp_obj, "main");
 
-    CParseValue *removed = cparse_object_remove_attribute(cp_obj, "main");
+    fail_unless(removed == value);
 
-    fail_unless(cparse_value_equals(removed, &value));
+    fail_unless(cparse_object_attributes(cp_obj) == 0);
 
-    fail_unless(cparse_object_attribute_count(cp_obj) == 0);
-
+    cparse_json_free(value);
 }
 END_TEST
 
 START_TEST(test_cparse_object_to_json)
 {
-    char buf[BUFSIZ];
+    const char *buf;
 
     cparse_object_set_string(cp_obj, "main", "Hello,World");
 
-    cparse_object_to_json(cp_obj, buf, 0);
+    buf = cparse_json_to_json_string(cp_obj->attributes);
 
     fail_unless(!strcmp(buf, "{\"main\":\"Hello,World\"}"));
 
     cparse_object_set_number(cp_obj, "main", 1234);
 
-    cparse_object_to_json(cp_obj, buf, 0);
+    buf = cparse_json_to_json_string(cp_obj->attributes);
 
     fail_unless(!strcmp(buf, "{\"main\":1234}"));
 }

@@ -17,15 +17,15 @@ namespace cparse
             Date(const string &date);
             Date(time_t value);
             Date();
-            Date(const Value &obj);
+            Date(const JSON &obj);
             virtual ~Date();
             Date(const Date &value);
             Date(Date &&value);
             Date &operator=(const Date &value);
             Date &operator=(Date &&value);
 
-            Value toValue() const;
-            void fromValue(const Value &attributes);
+            JSON toJSON() const;
+            void fromJSON(const JSON &attributes);
 
             time_t getTimestamp() const;
 

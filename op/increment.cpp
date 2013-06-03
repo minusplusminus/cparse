@@ -48,9 +48,9 @@ namespace cparse
             amount_ = value;
         }
 
-        Value Increment::toValue() const
+        JSON Increment::toJSON() const
         {
-            Value value;
+            JSON value;
 
             value.setString(protocol::KEY_OP, protocol::KEY_INCREMENT);
 

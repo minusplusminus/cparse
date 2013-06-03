@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 #include <functional>
-#include "value.h"
+#include "json.h"
 #include "type/pointer.h"
 #include <thread>
 
@@ -23,7 +23,7 @@ namespace cparse
 
         static Object *create(const std::string &className);
 
-        static Object *create(const std::string &className, const Value &attributes);
+        static Object *create(const std::string &className, const JSON &attributes);
 
         static Object *createWithoutData(const std::string &className, const std::string &objectId);
 
@@ -42,32 +42,32 @@ namespace cparse
 
         bool is_valid() const;
 
-        Value get(const std::string &key) const;
+        JSON get(const std::string &key) const;
         int32_t getInt(const std::string &key) const;
         int64_t getInt64(const std::string &key) const;
         double getDouble(const std::string &key) const;
-        Array getArray(const std::string &key) const;
+        JSONArray getArray(const std::string &key) const;
         string getString(const std::string &key) const;
         Object *getObject(const std::string &key);
         User *getUser(const std::string &key);
 
-        void set(const std::string &key, const Value &value);
+        void set(const std::string &key, const JSON &value);
         void setInt(const std::string &key, int32_t value);
         void setInt64(const std::string &key, int64_t value);
         void setDouble(const std::string &key, double value);
         void setString(const std::string &key, const std::string &value);
-        void setArray(const std::string &key, const Array &value);
+        void setArray(const std::string &key, const JSONArray &value);
         void setObject(const std::string &key, const Object &obj);
 
         void remove(const std::string &key);
         bool contains(const std::string &key) const;
 
-        void add(const std::string &key, const Value &value, bool unique = false);
+        void add(const std::string &key, const JSON &value, bool unique = false);
         void addInt(const std::string &key, int32_t value, bool unique = false);
         void addInt64(const std::string &key, int64_t value, bool unique = false);
         void addDouble(const std::string &key, double value, bool unique = false);
         void addString(const std::string &key, const std::string &value, bool unique = false);
-        void addArray(const std::string &key, const Array &value, bool unique = false);
+        void addArray(const std::string &key, const JSONArray &value, bool unique = false);
 
         bool save();
         bool fetch();
@@ -99,14 +99,14 @@ namespace cparse
         bool operator!=(const type::Pointer &other) const;
 
     protected:
-        virtual void merge(Value attributes);
+        virtual void merge(JSON attributes);
         virtual void copy_fetched(const Object &obj);
     private:
         std::string className_;
         time_t createdAt_;
         std::string objectId_;
         time_t updatedAt_;
-        Value attributes_;
+        JSON attributes_;
         bool dataAvailable_;
         map<std::string,Object*> fetched_;
     };

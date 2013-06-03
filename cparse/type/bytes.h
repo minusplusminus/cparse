@@ -15,7 +15,7 @@ namespace cparse
             typedef arg3::binary Type;
 
             Bytes(const Type &data );
-            Bytes(const Value &value);
+            Bytes(const JSON &value);
             Bytes();
             virtual ~Bytes();
             Bytes(const Bytes &other);
@@ -23,8 +23,8 @@ namespace cparse
             Bytes &operator=(const Bytes &other);
             Bytes &operator=(Bytes &&other);
 
-            Value toValue() const;
-            void fromValue(const Value &attributes);
+            JSON toJSON() const;
+            void fromJSON(const JSON &attributes);
 
             Type getData() const;
 

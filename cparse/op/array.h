@@ -2,7 +2,7 @@
 #define ARG3_CPARSE_OP_ARRAY_H_
 
 #include <string>
-#include "../value.h"
+#include "../json.h"
 
 namespace cparse
 {
@@ -11,7 +11,7 @@ namespace cparse
         class Array
         {
         public:
-            Array(const string &operation, const cparse::Array &objects);
+            Array(const string &operation, const JSONArray &objects);
 
             Array();
 
@@ -25,14 +25,14 @@ namespace cparse
 
             Array &operator=(Array &&value);
 
-            Value toValue() const;
+            JSON toJSON() const;
 
             void setOperation(const string &value);
-            void setObjects(const cparse::Array &value);
+            void setObjects(const JSONArray &value);
 
         private:
             string operation_;
-            cparse::Array objects_;
+            JSONArray objects_;
         };
     }
 }

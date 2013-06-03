@@ -1,5 +1,5 @@
 #include <arg3/net/restclient.h>
-#include <cparse/value.h>
+#include <cparse/json.h>
 
 using arg3::net::http::Method;
 using arg3::net::RESTClient;
@@ -16,6 +16,6 @@ namespace cparse
         Client &operator=(const Client &c);
         Client &operator=(Client &&c);
 
-        Value getResponseValue() const;
+        JSON getResponseValue() const;
     };
 }

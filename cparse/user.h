@@ -29,7 +29,7 @@ namespace cparse
         void setPassword(const string &value);
         bool isNew() const;
     protected:
-        virtual void merge(Value value);
+        virtual void merge(JSON value);
     private:
         static User *currentUser_;
 

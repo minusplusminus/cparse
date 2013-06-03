@@ -55,7 +55,7 @@ solution "cparse"
 
     language "C"
 
-    buildoptions { "-Wall", "-Werror", "-std=c89", "-I." }
+    buildoptions { "-Wall", "-Werror", "-std=c89", "-ansi", "-I." }
 
     configuration "Debug"
         flags "Symbols"
@@ -66,7 +66,7 @@ solution "cparse"
         buildoptions { "-O" }
     
     project "cparse"
-        kind "StaticLib"
+        kind "SharedLib"
         files {
             "**.c",
             "**.h"
@@ -74,13 +74,16 @@ solution "cparse"
         excludes {
             "**.test.c"
         }
+        links {
+          "curl", "json"
+        }
     
     project "cparsetest"
         kind "ConsoleApp"
         files {
             "**.test.c"
         }
-        links { "cparse", "check", "curl", "json"}
+        links { "cparse", "check" }
         
         configuration "Debug"
             postbuildcommands {

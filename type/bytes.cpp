@@ -5,9 +5,9 @@ namespace cparse
 {
     namespace type
     {
-        Bytes::Bytes(const Value &value)
+        Bytes::Bytes(const JSON &value)
         {
-            fromValue(value);
+            fromJSON(value);
         }
 
         Bytes::Bytes(const Type &data) : value_(data)
@@ -45,16 +45,16 @@ namespace cparse
             }
             return *this;
         }
-        
-        void Bytes::fromValue(const Value &attributes)
+
+        void Bytes::fromJSON(const JSON &attributes)
         {
             if(attributes.contains("base64"))
                 value_ = arg3::base64::decode(attributes.getString("base64"));
         }
 
-        Value Bytes::toValue() const
+        JSON Bytes::toJSON() const
         {
-            Value value;
+            JSON value;
 
             value.setString(protocol::KEY_TYPE, protocol::TYPE_BYTES);
 

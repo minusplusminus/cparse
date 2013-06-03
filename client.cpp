@@ -60,9 +60,9 @@ namespace cparse
         return *this;
     }
 
-    Value Client::getResponseValue() const
+    JSON Client::getResponseValue() const
     {
-        Value obj;
+        JSON obj;
 
         if (!obj.parse(getResponse()))
             throw Exception("reponse is not a valid response");

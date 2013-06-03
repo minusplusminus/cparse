@@ -39,7 +39,7 @@ cparse_object_free(obj);
 Another Example
 ===============
 ```
-CParseArray *array = cparse_array_new();
+CParseJSONArray *array = cparse_array_new();
 
 cparse_array_add_number(array, 1234);
 

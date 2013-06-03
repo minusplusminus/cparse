@@ -10,7 +10,7 @@ namespace cparse
         class GeoPoint
         {
         public:
-            GeoPoint(const Value &attributes);
+            GeoPoint(const JSON &attributes);
             GeoPoint(double lat, double lon);
             GeoPoint();
             virtual ~GeoPoint();
@@ -25,8 +25,8 @@ namespace cparse
             void setLatitude(double value);
             void setLongitude(double value);
 
-            Value toValue() const;
-            void fromValue(const Value &attributes);
+            JSON toJSON() const;
+            void fromJSON(const JSON &attributes);
 
         private:
             double latitude_;

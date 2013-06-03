@@ -2,8 +2,7 @@
 #define ARG3_CPARSE_TYPE_FILE_H_
 
 #include <string>
-#include <arg3/string/string.h>
-#include "../value.h"
+#include "../json.h"
 
 using namespace std;
 
@@ -17,7 +16,7 @@ namespace cparse
             typedef string ContentType;
 
             File();
-            File(const Value& obj);
+            File(const JSON& obj);
             File(const string &fileName, const ContentType &content, const string &contentType);
             File(const File &value);
             File(File &&value);
@@ -25,8 +24,8 @@ namespace cparse
             File &operator=(const File &value);
             File &operator=(File &&value);
 
-            Value toValue() const;
-            void fromValue(const Value &attributes);
+            JSON toJSON() const;
+            void fromJSON(const JSON &attributes);
 
             string getLocaleFileName() const;
             string getParseFileName() const;

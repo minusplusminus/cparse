@@ -2,18 +2,26 @@
 #define CPARSE_DEFINES_H_
 
 #include <json/json.h>
+#include <json/json_object_iterator.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+typedef unsigned char bool;
+
+#undef true
+#define true 1
+#undef false
+#define false 0
+
 typedef enum {
-    kCPCachePolicyIgnoreCache = 0,
-    kCPCachePolicyCacheOnly,
-    kCPCachePolicyNetworkOnly,
-    kCPCachePolicyCacheElseNetwork,
-    kCPCachePolicyNetworkElseCache,
-    kCPCachePolicyCacheThenNetwork
+    kCParseCachePolicyIgnoreCache = 0,
+    kCParseCachePolicyCacheOnly,
+    kCParseCachePolicyNetworkOnly,
+    kCParseCachePolicyCacheElseNetwork,
+    kCParseCachePolicyNetworkElseCache,
+    kCParseCachePolicyCacheThenNetwork
 } CParseCachePolicy;
 
 typedef struct cparse_acl CParseACL;
@@ -34,19 +42,18 @@ typedef void (*CParseObjectCallback)(CParseObject *obj, CParseError *error);
 
 typedef enum
 {
-    kCPValueNumber = json_type_int,
-    kCPValueReal = json_type_double,
-    kCPValueString = json_type_string,
-    kCPValueBoolean = json_type_boolean,
-    kCPValueObject = json_type_object,
-    kCPValueArray = json_type_array,
-    kCPValueNull = json_type_null
-} CParseValueType;
+    kCParseJSONNumber = json_type_int,
+    kCParseJSONReal = json_type_double,
+    kCParseJSONString = json_type_string,
+    kCParseJSONBoolean = json_type_boolean,
+    kCParseJSONObject = json_type_object,
+    kCParseJSONArray = json_type_array,
+    kCParseJSONNull = json_type_null
+} CParseJSONType;
 
-typedef array_list CParseArray;
+typedef array_list CParseJSONArray;
 
-typedef json_object CParseValue;
-
+typedef json_object CParseJSON;
 
 #ifdef __cplusplus
 }

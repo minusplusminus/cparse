@@ -15,14 +15,14 @@ namespace cparse
         public:
             Pointer();
             Pointer(const Object &obj);
-            Pointer(const Value &attributes);
+            Pointer(const JSON &attributes);
             virtual ~Pointer();
             Pointer(const Pointer &value);
             Pointer(Pointer &&value);
             Pointer &operator=(const Pointer &value);
             Pointer &operator=(Pointer &&value);
-            Value toValue() const;
-            void fromValue(const Value &attributes);
+            JSON toJSON() const;
+            void fromJSON(const JSON &attributes);
             string id() const;
             string className() const;
             bool operator==(const Pointer &other) const;

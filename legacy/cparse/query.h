@@ -1,10 +1,14 @@
 #ifndef CPARSE_QUERY_H_
 #define CPARSE_QUERY_H_
 
-#include <stdbool.h>
 #include <cparse/defines.h>
 #include <cparse/error.h>
 #include <cparse/object.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct cparse_query
 {
@@ -30,5 +34,10 @@ void cparse_query_cancel(CParseQuery *query);
 void cparse_query_clear_cache(CParseQuery *query);
 
 int cparse_query_count_objects(CParseQuery *query, CParseError **error);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

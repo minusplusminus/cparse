@@ -59,19 +59,19 @@ Context(ObjectTest)
     {
         AssertThrows(cparse::Exception, obj_->get("testVal1"));
 
-        Value sValue("test string 1");
+        JSON sValue("test string 1");
 
         obj_->set("testVal1", sValue);
 
         Assert::That(sValue, Equals(obj_->get("testVal1")));
 
-        Value iValue(1234567LL);
+        JSON iValue(1234567LL);
 
         obj_->set("testVal2", iValue);
 
         Assert::That(iValue, Equals(obj_->get("testVal2")));
 
-        Value bValue(true);
+        JSON bValue(true);
 
         obj_->set("testVal3", bValue);
 
@@ -125,7 +125,7 @@ Context(ObjectTest)
 
     Spec(remove)
     {
-        Value value(1234);
+        JSON value(1234);
 
         obj_->set("main", value);
 

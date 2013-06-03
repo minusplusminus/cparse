@@ -1,7 +1,7 @@
 #ifndef ARG3_CPARSE_OP_DECREMENT_H_
 #define ARG3_CPARSE_OP_DECREMENT_H_
 
-#include "../value.h"
+#include "../json.h"
 
 namespace cparse
 {
@@ -18,7 +18,7 @@ namespace cparse
             Decrement &operator=(const Decrement &value);
             Decrement &operator=(Decrement &&value);
 
-            Value toValue() const;
+            JSON toJSON() const;
 
             int getAmount() const;
             void setAmount(int value);

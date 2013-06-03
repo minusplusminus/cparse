@@ -7,9 +7,9 @@ namespace cparse
 {
     namespace type
     {
-        File::File(const Value &obj)
+        File::File(const JSON &obj)
         {
-            fromValue(obj);
+            fromJSON(obj);
         }
 
         File::File(const string &fileName, const ContentType &content, const string &contentType) :
@@ -57,8 +57,8 @@ namespace cparse
             }
             return *this;
         }
-        
-        void File::fromValue(const Value &obj)
+
+        void File::fromJSON(const JSON &obj)
         {
             if(obj.contains("local_filename"))
                 localFileName_ = obj.getString("local_filename");
@@ -78,9 +78,9 @@ namespace cparse
                 body_ = obj.getString("body");
         }
 
-        Value File::toValue() const
+        JSON File::toJSON() const
         {
-            Value value;
+            JSON value;
 
             value.setString(protocol::KEY_TYPE, protocol::TYPE_FILE);
 
@@ -127,7 +127,7 @@ namespace cparse
 
             client.setPayload(body_);
 
-            Value response;
+            JSON response;
 
             try {
                 client.post("files/" + localFileName_);
@@ -138,7 +138,7 @@ namespace cparse
                 Log::trace(e.what());
                 return false;
             }
-            fromValue(response);
+            fromJSON(response);
             return true;
         }
 

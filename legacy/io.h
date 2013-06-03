@@ -25,7 +25,6 @@ struct cparse_io_request
 {
 	char *path;
 	char *payload;
-	size_t payload_size;
 	CParseRequestMethod method;
 };
 
@@ -39,6 +38,6 @@ CParseRequest *cparse_request_new();
 
 void cparse_request_free(CParseRequest *request);
 
-CParseObject *cparse_request_get_json(CParseRequest *request, CParseError **error);
+CParseJSON *cparse_request_get_json(CParseRequest *request, CParseError **error);
 
 #endif

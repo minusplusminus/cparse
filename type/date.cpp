@@ -29,9 +29,9 @@ namespace cparse
             fromString(value);
         }
 
-        Date::Date(const Value &obj)
+        Date::Date(const JSON &obj)
         {
-            fromValue(obj);
+            fromJSON(obj);
         }
 
         Date::~Date()
@@ -60,16 +60,16 @@ namespace cparse
             }
             return *this;
         }
-        
 
-        void Date::fromValue(const Value &obj)
+
+        void Date::fromJSON(const JSON &obj)
         {
             if(obj.contains("iso"))
                 fromString(obj.getString("iso"));
         }
 
-        Value Date::toValue() const {
-            Value value;
+        JSON Date::toJSON() const {
+            JSON value;
 
             value.setString(protocol::KEY_TYPE, protocol::TYPE_DATE);
 

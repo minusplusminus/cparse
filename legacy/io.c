@@ -3,7 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <curl/curl.h>
-#include <json/json.h>
+#include <cparse/json.h>
 #include <cparse/object.h>
 #include <cparse/error.h>
 #include "io.h"
@@ -84,24 +84,22 @@ static void cparse_io_set_headers(CURL *curl)
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 }
 
-CParseObject *cparse_request_get_json(CParseRequest *request, CParseError **error)
+CParseJSON *cparse_request_get_json(CParseRequest *request, CParseError **error)
 {
     CParseResponse *response = cparse_request_get_response(request);
 
-    json_object *jobj = json_tokener_parse(response->text);
+    CParseJSON *obj = json_tokener_parse(response->text);
 
-    CParseObject *obj = cparse_object_from_json(jobj);
-
-    char *errorMessage = cparse_object_get_string(obj, "error");
+    const char *errorMessage = cparse_json_get_string(obj, "error");
 
     if(errorMessage != NULL) {
         *error = cparse_error_new();
 
         (*error)->message = strdup(errorMessage);
 
-        (*error)->code = cparse_object_get_number(obj, "code", 0);
+        (*error)->code = cparse_json_get_number(obj, "code");
 
-        cparse_object_free(obj);
+        cparse_json_free(obj);
 
         return NULL;
     }
@@ -131,12 +129,12 @@ CParseResponse *cparse_request_get_response(CParseRequest *request)
     case kCPRequestPost:
         curl_easy_setopt(curl, CURLOPT_POST, 1L);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, request->payload);
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, request->payload_size);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(request->payload));
         break;
     case kCPRequestPut:
         curl_easy_setopt(curl, CURLOPT_PUT, 1L);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, request->payload);
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, request->payload_size);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(request->payload));
         break;
     case kCPRequestDelete:
         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");

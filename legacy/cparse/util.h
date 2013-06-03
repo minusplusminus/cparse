@@ -3,6 +3,14 @@
 
 #include <time.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 time_t cparse_date_time(const char *str);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -32,7 +32,7 @@ namespace cparse
 
         Client client;
 
-        Value body;
+        JSON body;
 
         body.setString("username", username);
 
@@ -42,7 +42,7 @@ namespace cparse
 
         client.get("login");
 
-        Value response;
+        JSON response;
 
         try {
             response = client.getResponseValue();
@@ -105,7 +105,7 @@ namespace cparse
         return *this;
     }
 
-    void User::merge(Value attributes)
+    void User::merge(JSON attributes)
     {
         Object::merge(attributes);
 

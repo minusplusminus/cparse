@@ -36,7 +36,7 @@ namespace cparse
         return obj;
     }
 
-    Object *Object::create(const string &className, const Value &attributes)
+    Object *Object::create(const string &className, const JSON &attributes)
     {
         Object *obj = new Object(className);
 
@@ -82,7 +82,7 @@ namespace cparse
         attributes_(std::move(other.attributes_)),
         dataAvailable_(other.dataAvailable_),
         fetched_(std::move(other.fetched_))
-    { 
+    {
     }
 
     Object::~Object() {
@@ -119,7 +119,7 @@ namespace cparse
         return *this;
     }
 
-     Object &Object::operator=(Object &&other) {
+    Object &Object::operator=(Object &&other) {
         if(this != &other) {
             className_ = std::move(other.className_);
             createdAt_ = other.createdAt_;
@@ -137,7 +137,7 @@ namespace cparse
         return objectId_.empty();
     }
 
-    void Object::merge(Value attributes)
+    void Object::merge(JSON attributes)
     {
         attributes.remove(protocol::KEY_CLASS_NAME);
 
@@ -182,7 +182,7 @@ namespace cparse
         return updatedAt_;
     }
 
-    Value Object::get(const string &key) const
+    JSON Object::get(const string &key) const
     {
         if (!attributes_.contains(key))
             throw Exception(key + " not found.");
@@ -210,7 +210,7 @@ namespace cparse
         return get(key).toString();
     }
 
-    Array Object::getArray(const string &key) const
+    JSONArray Object::getArray(const string &key) const
     {
         return get(key).toArray();
     }
@@ -219,7 +219,7 @@ namespace cparse
         if(fetched_.find(key) != fetched_.end())
             return fetched_[key];
 
-        Value val = get(key);
+        JSON val = get(key);
 
         if(!val.contains(protocol::KEY_TYPE) || val.getString(protocol::KEY_TYPE) != protocol::TYPE_POINTER)
             return NULL;
@@ -234,7 +234,7 @@ namespace cparse
         return static_cast<User*>(fetched_[key]);
     }
 
-    void Object::set(const string &key, const Value &value)
+    void Object::set(const string &key, const JSON &value)
     {
         attributes_.set(key, value);
     }
@@ -259,19 +259,21 @@ namespace cparse
         attributes_.setString(key, value);
     }
 
-    void Object::setArray(const string &key, const Array &value)
+    void Object::setArray(const string &key, const JSONArray &value)
     {
         attributes_.setArray(key, value);
     }
 
     void Object::setObject(const string &key, const Object &obj)
     {
-        Value value;
+        // create the pointer for this object
+        JSON value;
         value.setString(protocol::KEY_TYPE, protocol::TYPE_POINTER);
         value.setString(protocol::KEY_OBJECT_ID, obj.objectId_);
         value.setString(protocol::KEY_CLASS_NAME, obj.className_);
         attributes_.set(key, value);
 
+        // create the fetched object
         if(fetched_[key] != NULL)
         {
             Log::trace("deleting fetched object " + key);
@@ -290,7 +292,7 @@ namespace cparse
         return attributes_.contains(key);
     }
 
-    void Object::add(const string &key, const Value &value, bool unique)
+    void Object::add(const string &key, const JSON &value, bool unique)
     {
         if (!unique || !attributes_.contains(key) || attributes_.get(key) != value)
             attributes_.add(key, value);
@@ -320,7 +322,7 @@ namespace cparse
             attributes_.addString(key, value);
     }
 
-    void Object::addArray(const string &key, const Array &value, bool unique)
+    void Object::addArray(const string &key, const JSONArray &value, bool unique)
     {
         if (!unique || !attributes_.contains(key) || attributes_.getArray(key) != value)
             attributes_.addArray(key, value);
@@ -333,7 +335,7 @@ namespace cparse
 
     bool Object::save()
     {
-        Value response;
+        JSON response;
 
         Client client;
 
@@ -388,7 +390,7 @@ namespace cparse
         }
 
         Client client;
-        Value response;
+        JSON response;
 
         try
         {
@@ -430,7 +432,7 @@ namespace cparse
 
         Client client;
 
-        Value response;
+        JSON response;
 
         try
         {
