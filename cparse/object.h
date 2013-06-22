@@ -9,8 +9,6 @@
 #include "type/pointer.h"
 #include <thread>
 
-using namespace arg3;
-
 namespace cparse
 {
     class Object;

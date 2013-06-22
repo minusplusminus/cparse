@@ -1,6 +1,7 @@
 #include <cparse/types.h>
 #include <cparse/json.h>
 #include "protocol.h"
+#include <string.h>
 
 CParsePointer *cparse_pointer_from_json(CParseJSON *data)
 {
@@ -22,11 +23,11 @@ CParseJSON *cparse_pointer_to_json(CParsePointer *p)
 {
     CParseJSON *data = cparse_json_new();
 
-    cparse_json_set_string(KEY_CLASS_NAME, p->className);
+    cparse_json_set_string(data, KEY_CLASS_NAME, p->className);
 
-    cparse_json_set_string(KEY_OBJECT_ID, p->objectId);
+    cparse_json_set_string(data, KEY_OBJECT_ID, p->objectId);
 
-    cparse_json_set_string(KEY_TYPE, TYPE_POINTER);
+    cparse_json_set_string(data, KEY_TYPE, TYPE_POINTER);
 
     return data;
 }

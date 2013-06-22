@@ -2,7 +2,7 @@
 #define ARG3_CPARSE_TYPE_BYTES_H_
 
 #include <string>
-#include <arg3/string/string.h>
+#include <vector>
 #include "parsetype.h"
 
 namespace cparse
@@ -12,7 +12,7 @@ namespace cparse
         class Bytes : public ParseType
         {
         public:
-            typedef arg3::binary Type;
+            typedef vector<uint8_t> Type;
 
             Bytes(const Type &data );
             Bytes(const JSON &value);

@@ -39,6 +39,10 @@ CParseJSON *cparse_json_new_string(const char *value)
     return json_object_new_string(value);
 }
 
+CParseJSON *cparse_json_tokenize(const char *str) {
+    return json_tokener_parse(str);
+}
+
 void cparse_json_copy(CParseJSON *orig, CParseJSON *other, bool replaceOnConflict)
 {
     json_object_object_foreach(other, key, val)

@@ -45,7 +45,7 @@ namespace cparse
         JSON response;
 
         try {
-            response = client.getResponseValue();
+            response = client.getJSONResponse();
         }
         catch(const exception &e) {
             Log::trace(e.what());

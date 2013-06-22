@@ -2,7 +2,7 @@
 #define CPARSE_TYPES_H_
 
 #include <cparse/defines.h>
-
+#include <time.h>
 
 #ifdef __cplusplus
 extern "C" {

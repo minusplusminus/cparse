@@ -78,6 +78,8 @@ START_TEST(test_cparse_object_fetch)
     data = cparse_object_get(cp_obj, "inner");
 
     fail_unless(cparse_json_num_keys(data) > 3);
+
+    cparse_object_delete(obj, NULL);
 }
 END_TEST
 

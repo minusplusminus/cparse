@@ -64,7 +64,7 @@ solution "cparse"
     configuration "Release"
         targetdir "bin/release"
         buildoptions { "-O" }
-    
+
     project "cparse"
         kind "SharedLib"
         files {
@@ -77,14 +77,14 @@ solution "cparse"
         links {
           "json", "curl"
         }
-    
+
     project "cparsetest"
         kind "ConsoleApp"
         files {
             "**.test.c"
         }
         links { "cparse", "check" }
-        
+
         configuration "Debug"
             postbuildcommands {
               "./bin/debug/cparsetest"

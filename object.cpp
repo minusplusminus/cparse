@@ -1,7 +1,5 @@
 #include <cparse/object.h>
 #include <cparse/exception.h>
-#include <arg3/format/format.h>
-#include <arg3/string/string.h>
 #include "util.h"
 #include <cparse/user.h>
 #include "protocol.h"
@@ -12,6 +10,19 @@ using namespace std;
 
 namespace cparse
 {
+    time_t datetime(const std::string &s, const std::string &format)
+    {
+        struct tm tp;
+
+        if (!strptime(s.c_str(), format.c_str(), &tp))
+            return 0;
+
+        return mktime(&tp);
+    }
+
+    time_t datetime(const string &s) {
+        return datetime(s, "%FT%T%z");
+    }
     bool validate_class_name(const string &value)
     {
 
@@ -86,7 +97,7 @@ namespace cparse
     }
 
     Object::~Object() {
-        for(auto &e : fetched_)
+for(auto &e : fetched_)
         {
             if(e.second) {
                 delete e.second;
@@ -96,7 +107,7 @@ namespace cparse
 
     void Object::copy_fetched(const Object &obj)
     {
-        for(auto &e : obj.fetched_) {
+for(auto &e : obj.fetched_) {
             if(fetched_[e.first] != NULL) {
                 delete fetched_[e.first];
             }
@@ -148,15 +159,15 @@ namespace cparse
 
         if (attributes.contains(protocol::KEY_CREATED_AT))
         {
-            createdAt_ = arg3::datetime(attributes.remove(protocol::KEY_CREATED_AT));
+            createdAt_ = datetime(attributes.remove(protocol::KEY_CREATED_AT));
         }
 
         if (attributes.contains(protocol::KEY_UPDATED_AT))
         {
-            updatedAt_ = arg3::datetime(attributes.remove(protocol::KEY_UPDATED_AT));
+            updatedAt_ = datetime(attributes.remove(protocol::KEY_UPDATED_AT));
         }
 
-        for (auto & a : attributes)
+for (auto & a : attributes)
         {
             set(a.first, a.second);
         }
@@ -336,8 +347,8 @@ namespace cparse
     bool Object::save()
     {
         JSON response;
-
         Client client;
+        char buf[BUFSIZ+1] = {0};
 
         client.setPayload(attributes_.toString());
 
@@ -346,16 +357,18 @@ namespace cparse
             /* build the request based on the id */
             if (objectId_.empty())
             {
-                client.post(format("{0}/{1}", protocol::OBJECTS_PATH, className_));
+                snprintf(buf, BUFSIZ, "%s/%s", protocol::OBJECTS_PATH, className_.c_str());
+                client.post(buf);
             }
             else
             {
-                client.put(format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
+                snprintf(buf, BUFSIZ, "%s/%s/%s", protocol::OBJECTS_PATH, className_.c_str(), objectId_.c_str());
+                client.put(buf);
             }
 
             Log::trace("saving: " + client.getPayload());
 
-            response = client.getResponseValue();
+            response = client.getJSONResponse();
 
             Log::trace("saved: " + response.toString());
         }
@@ -391,13 +404,15 @@ namespace cparse
 
         Client client;
         JSON response;
+        char buf[BUFSIZ+1] = {0};
 
         try
         {
+            snprintf(buf, BUFSIZ, "%s/%s/%s", protocol::OBJECTS_PATH, className_.c_str(), objectId_.c_str());
 
-            client.get(format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
+            client.get(buf);
 
-            response = client.getResponseValue();
+            response = client.getJSONResponse();
 
             Log::trace("refresh: " + response.toString());
         }
@@ -431,15 +446,16 @@ namespace cparse
         }
 
         Client client;
-
+        char buf[BUFSIZ+1] = {0};
         JSON response;
 
         try
         {
+            snprintf(buf, BUFSIZ, "%s/%s/%s", protocol::OBJECTS_PATH, className_.c_str(), objectId_.c_str());
 
-            client.get(format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
+            client.get(buf);
 
-            response = client.getResponseValue();
+            response = client.getJSONResponse();
 
             Log::trace("fetch: " + response.toString());
         }
@@ -468,7 +484,7 @@ namespace cparse
     {
         bool success = true;
 
-        for (auto & obj : objects)
+for (auto & obj : objects)
         {
             success = success && obj.save();
         }
@@ -488,6 +504,7 @@ namespace cparse
     bool Object::de1ete()
     {
         Client client;
+        char buf[BUFSIZ+1] = {0};
 
         if (objectId_.empty())
         {
@@ -497,7 +514,8 @@ namespace cparse
         /* do the deed */
         try
         {
-            client.de1ete(format("{0}/{1}/{2}", protocol::OBJECTS_PATH, className_, objectId_));
+            snprintf(buf, BUFSIZ, "%s/%s/%s", protocol::OBJECTS_PATH, className_.c_str(), objectId_.c_str());
+            client.de1ete(buf);
         }
         catch (const exception &e)
         {

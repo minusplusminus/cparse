@@ -51,6 +51,8 @@ extern "C" {
 
     CParseJSON* cparse_json_remove(CParseJSON *obj, const char *key);
 
+    CParseJSON* cparse_json_tokenize(const char *str);
+
     /* array setters */
     void cparse_json_array_add_number(CParseJSON *array, long long value);
     void cparse_json_array_add_real(CParseJSON *array, double value);

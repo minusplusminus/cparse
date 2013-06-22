@@ -1,5 +1,6 @@
 #include <cparse/parse.h>
 #include <string>
+#include "client.h"
 
 using namespace std;
 
@@ -11,6 +12,7 @@ namespace cparse
     string cparse_facebook_app_id_;
     bool cparse_offline_messages_;
     bool cparse_error_messages_;
+    ClientInterface *cparse_client_interface_ = new CURLClientInterface();
 
     const char *const Parse::VERSION = "1.0";
 
@@ -38,6 +40,14 @@ namespace cparse
     Parse &Parse::operator=(Parse &&other)
     {
         return *this;
+    }
+
+    void Parse::set_client_interface(ClientInterface *interface)
+    {
+        if(cparse_client_interface_) {
+            delete cparse_client_interface_;
+        }
+        cparse_client_interface_ = interface;
     }
 
     void Parse::set_application_id(const string &appId)

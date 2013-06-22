@@ -78,31 +78,32 @@ solution "cparse"
     configuration "Debug"
         flags "Symbols"
         targetdir "bin/debug"
-        buildoptions { "-g" }
+        buildoptions { "-g -D_DEBUG" }
     configuration "Release"
         targetdir "bin/release"
         buildoptions { "-O" }
     
     project "cparse"
-        kind "StaticLib"
+        kind "SharedLib"
         files {
             "**.cpp",
             "**.h"
         }
         excludes {
-            "**.test.cpp"
+            "**.test.cpp",
+            "legacy"
         }
         links {
-            "arg3", "curl"
+            "curl", "arg3"
         }
-    
+
     project "cparsetest"
         kind "ConsoleApp"
         files {
             "**.test.cpp"
         }
         links { "cparse", "arg3" }
-        
+
     configuration "Debug"
         postbuildcommands {
           "./bin/debug/cparsetest"

@@ -132,7 +132,7 @@ namespace cparse
             try {
                 client.post("files/" + localFileName_);
 
-                response = client.getResponseValue();
+                response = client.getJSONResponse();
             }
             catch(const exception &e) {
                 Log::trace(e.what());

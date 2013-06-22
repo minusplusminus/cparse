@@ -5,10 +5,14 @@
 
 namespace cparse
 {
+    class ClientInterface;
+
     class Parse
     {
     public:
         static const char *const VERSION;
+
+        static void set_client_interface(ClientInterface *interface);
 
         static void set_application_id(const std::string &appId);
 

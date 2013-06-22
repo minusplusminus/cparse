@@ -170,7 +170,7 @@ Context(ObjectTest)
 
         Assert::That(sub->getInt("val1"), Equals(1234));
 
-        Assert::That(subclass.de1ete(), Equals(true));
+        Assert::That(sub->de1ete(), Equals(true));
 
         delete fetched;
     }
@@ -199,7 +199,7 @@ Context(ObjectTest)
 
         Assert::That(obj_->toPointer() == *obj_, Equals(true));
 
-
+        Assert::That(obj2.de1ete(), Equals(true));
     }
 };
 
