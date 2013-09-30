@@ -31,7 +31,7 @@ namespace cparse
         Parse(Parse &&other);
         ~Parse();
         Parse &operator=(const Parse &other);
-        Parse &operator=(Parse &&other);
+        Parse &operator=(Parse && other);
     };
 
 }

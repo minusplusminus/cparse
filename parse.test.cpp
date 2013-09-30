@@ -33,7 +33,7 @@ int main(void)
     else
         die("No api key");
 
-    if(config.contains("logLevel"))
+    if (config.contains("logLevel"))
     {
         Log::level lev = Log::lookupLogLevel(config.getString("logLevel"));
         Log::info("Setting log level " + std::to_string(lev));

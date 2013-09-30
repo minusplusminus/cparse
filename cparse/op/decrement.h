@@ -16,7 +16,7 @@ namespace cparse
             Decrement(Decrement &&value);
             virtual ~Decrement();
             Decrement &operator=(const Decrement &value);
-            Decrement &operator=(Decrement &&value);
+            Decrement &operator=(Decrement && value);
 
             JSON toJSON() const;
 

@@ -22,7 +22,7 @@ namespace cparse
             Date(const Date &value);
             Date(Date &&value);
             Date &operator=(const Date &value);
-            Date &operator=(Date &&value);
+            Date &operator=(Date && value);
 
             JSON toJSON() const;
             void fromJSON(const JSON &attributes);

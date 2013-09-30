@@ -22,7 +22,7 @@ namespace cparse
 
         Array &Array::operator=(const Array &a)
         {
-            if(this != &a)
+            if (this != &a)
             {
                 operation_ = a.operation_;
                 objects_ = a.objects_;
@@ -30,9 +30,9 @@ namespace cparse
             return *this;
         }
 
-        Array &Array::operator=(Array &&a)
+        Array &Array::operator=(Array && a)
         {
-            if(this != &a)
+            if (this != &a)
             {
                 operation_ = std::move(a.operation_);
                 objects_ = std::move(a.objects_);

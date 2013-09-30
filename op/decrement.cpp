@@ -22,16 +22,16 @@ namespace cparse
 
         Decrement &Decrement::operator=(const Decrement &a)
         {
-            if(this != &a)
+            if (this != &a)
             {
                 amount_ = a.amount_;
             }
             return *this;
         }
 
-        Decrement &Decrement::operator=(Decrement &&a)
+        Decrement &Decrement::operator=(Decrement && a)
         {
-            if(this != &a)
+            if (this != &a)
             {
                 amount_ = a.amount_;
             }

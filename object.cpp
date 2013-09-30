@@ -20,7 +20,8 @@ namespace cparse
         return mktime(&tp);
     }
 
-    time_t datetime(const string &s) {
+    time_t datetime(const string &s)
+    {
         return datetime(s, "%FT%T%z");
     }
     bool validate_class_name(const string &value)
@@ -96,10 +97,12 @@ namespace cparse
     {
     }
 
-    Object::~Object() {
-for(auto &e : fetched_)
+    Object::~Object()
+    {
+        for (auto & e : fetched_)
         {
-            if(e.second) {
+            if (e.second)
+            {
                 delete e.second;
             }
         }
@@ -107,16 +110,20 @@ for(auto &e : fetched_)
 
     void Object::copy_fetched(const Object &obj)
     {
-for(auto &e : obj.fetched_) {
-            if(fetched_[e.first] != NULL) {
+        for (auto & e : obj.fetched_)
+        {
+            if (fetched_[e.first] != NULL)
+            {
                 delete fetched_[e.first];
             }
             fetched_[e.first] = new Object(*e.second);
         }
     }
 
-    Object &Object::operator=(const Object &other) {
-        if(this != &other) {
+    Object &Object::operator=(const Object &other)
+    {
+        if (this != &other)
+        {
             className_ = other.className_;
             createdAt_ = other.createdAt_;
             objectId_ = other.objectId_;
@@ -130,8 +137,10 @@ for(auto &e : obj.fetched_) {
         return *this;
     }
 
-    Object &Object::operator=(Object &&other) {
-        if(this != &other) {
+    Object &Object::operator=(Object && other)
+    {
+        if (this != &other)
+        {
             className_ = std::move(other.className_);
             createdAt_ = other.createdAt_;
             objectId_ = std::move(other.objectId_);
@@ -144,7 +153,8 @@ for(auto &e : obj.fetched_) {
         return *this;
     }
 
-    bool Object::isNew() const {
+    bool Object::isNew() const
+    {
         return objectId_.empty();
     }
 
@@ -167,7 +177,7 @@ for(auto &e : obj.fetched_) {
             updatedAt_ = datetime(attributes.remove(protocol::KEY_UPDATED_AT));
         }
 
-for (auto & a : attributes)
+        for (auto & a : attributes)
         {
             set(a.first, a.second);
         }
@@ -226,13 +236,14 @@ for (auto & a : attributes)
         return get(key).toArray();
     }
 
-    Object *Object::getObject(const string &key) {
-        if(fetched_.find(key) != fetched_.end())
+    Object *Object::getObject(const string &key)
+    {
+        if (fetched_.find(key) != fetched_.end())
             return fetched_[key];
 
         JSON val = get(key);
 
-        if(!val.contains(protocol::KEY_TYPE) || val.getString(protocol::KEY_TYPE) != protocol::TYPE_POINTER)
+        if (!val.contains(protocol::KEY_TYPE) || val.getString(protocol::KEY_TYPE) != protocol::TYPE_POINTER)
             return NULL;
 
         Log::trace("creating fetched object " + key);
@@ -241,8 +252,9 @@ for (auto & a : attributes)
         return fetched_[key];
     }
 
-    User *Object::getUser(const string &key) {
-        return static_cast<User*>(fetched_[key]);
+    User *Object::getUser(const string &key)
+    {
+        return static_cast<User *>(fetched_[key]);
     }
 
     void Object::set(const string &key, const JSON &value)
@@ -285,7 +297,7 @@ for (auto & a : attributes)
         attributes_.set(key, value);
 
         // create the fetched object
-        if(fetched_[key] != NULL)
+        if (fetched_[key] != NULL)
         {
             Log::trace("deleting fetched object " + key);
             delete fetched_[key];
@@ -348,7 +360,7 @@ for (auto & a : attributes)
     {
         JSON response;
         Client client;
-        char buf[BUFSIZ+1] = {0};
+        char buf[BUFSIZ + 1] = {0};
 
         client.setPayload(attributes_.toString());
 
@@ -404,7 +416,7 @@ for (auto & a : attributes)
 
         Client client;
         JSON response;
-        char buf[BUFSIZ+1] = {0};
+        char buf[BUFSIZ + 1] = {0};
 
         try
         {
@@ -416,7 +428,8 @@ for (auto & a : attributes)
 
             Log::trace("refresh: " + response.toString());
         }
-        catch(const exception &e) {
+        catch (const exception &e)
+        {
             Log::trace(e.what());
             return false;
         }
@@ -433,20 +446,20 @@ for (auto & a : attributes)
             return false;
         }
 
-        if(!contains(protocol::KEY_TYPE))
+        if (!contains(protocol::KEY_TYPE))
         {
             return false;
         }
 
         string type = getString(protocol::KEY_TYPE);
 
-        if(type != protocol::TYPE_POINTER)
+        if (type != protocol::TYPE_POINTER)
         {
             return false;
         }
 
         Client client;
-        char buf[BUFSIZ+1] = {0};
+        char buf[BUFSIZ + 1] = {0};
         JSON response;
 
         try
@@ -459,7 +472,8 @@ for (auto & a : attributes)
 
             Log::trace("fetch: " + response.toString());
         }
-        catch(const exception &e) {
+        catch (const exception &e)
+        {
 
             Log::debug(e.what());
             return false;
@@ -484,7 +498,7 @@ for (auto & a : attributes)
     {
         bool success = true;
 
-for (auto & obj : objects)
+        for (auto & obj : objects)
         {
             success = success && obj.save();
         }
@@ -504,7 +518,7 @@ for (auto & obj : objects)
     bool Object::de1ete()
     {
         Client client;
-        char buf[BUFSIZ+1] = {0};
+        char buf[BUFSIZ + 1] = {0};
 
         if (objectId_.empty())
         {
@@ -542,7 +556,7 @@ for (auto & obj : objects)
 
     type::Pointer Object::toPointer() const
     {
-        if(isNew())
+        if (isNew())
             throw Exception("object uninitialized");
 
         return type::Pointer(*this);
@@ -550,7 +564,7 @@ for (auto & obj : objects)
 
     bool Object::operator==(const Object &other) const
     {
-        if(isNew())
+        if (isNew())
         {
             return other.isNew() && this == &other;
         }
@@ -565,7 +579,7 @@ for (auto & obj : objects)
 
     bool Object::operator==(const type::Pointer &other) const
     {
-        if(isNew()) return false;
+        if (isNew()) return false;
 
         return objectId_ == other.id();
     }

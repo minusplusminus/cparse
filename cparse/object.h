@@ -34,7 +34,7 @@ namespace cparse
         Object(const Object &other);
         Object(Object &&other);
         Object &operator=(const Object &other);
-        Object &operator=(Object &&other);
+        Object &operator=(Object && other);
 
         std::string keys() const;
 
@@ -106,7 +106,7 @@ namespace cparse
         time_t updatedAt_;
         JSON attributes_;
         bool dataAvailable_;
-        map<std::string,Object*> fetched_;
+        map<std::string, Object *> fetched_;
     };
 }
 

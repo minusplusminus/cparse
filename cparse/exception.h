@@ -12,7 +12,7 @@ namespace cparse
         Exception(const std::string &what) : std::logic_error(what)
         {}
 
-        Exception(const Exception &e) : std::logic_error(e) 
+        Exception(const Exception &e) : std::logic_error(e)
         {}
 
         Exception(Exception &&e) : std::logic_error(std::move(e))
@@ -22,14 +22,14 @@ namespace cparse
 
         Exception &operator=(const Exception &e)
         {
-        	std::logic_error::operator=(e);
-        	return *this;
+            std::logic_error::operator=(e);
+            return *this;
         }
 
-        Exception &operator=(Exception &&e)
+        Exception &operator=(Exception && e)
         {
-        	std::logic_error::operator=(std::move(e));
-        	return *this;
+            std::logic_error::operator=(std::move(e));
+            return *this;
         }
     };
 }

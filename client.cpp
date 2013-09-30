@@ -15,7 +15,7 @@ namespace cparse
 
     static size_t curl_append_response_callback(void *ptr, size_t size, size_t nmemb, string *s)
     {
-        if(s == NULL) return 0;
+        if (s == NULL) return 0;
 
         const size_t new_len = size * nmemb;
 
@@ -30,10 +30,10 @@ namespace cparse
         return new_len;
     }
 
-    int CURLClientInterface::request(http::method method, const string& url, map<string,string> http_headers, const string &payload, string &response)
+    int CURLClientInterface::request(http::method method, const string &url, map<string, string> http_headers, const string &payload, string &response)
     {
         struct curl_slist *headers = NULL;
-        char buf[BUFSIZ+1] = {0};
+        char buf[BUFSIZ + 1] = {0};
         int responseCode;
 
         CURL *curl_ = curl_easy_init();
@@ -47,7 +47,7 @@ namespace cparse
 
         curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, curl_append_response_callback);
 
-        switch(method)
+        switch (method)
         {
         case http::GET:
             curl_easy_setopt(curl_, CURLOPT_HTTPGET, 1L);
@@ -66,7 +66,7 @@ namespace cparse
             break;
         }
 
-for(auto &h : http_headers)
+        for (auto & h : http_headers)
         {
             snprintf(buf, BUFSIZ, "%s: %s", h.first.c_str(), h.second.c_str());
 
@@ -98,7 +98,7 @@ for(auto &h : http_headers)
 
     Client::Client(ClientInterface *interface) : interface_(interface)
     {
-        char version[BUFSIZ+1] = {0};
+        char version[BUFSIZ + 1] = {0};
 
         headers_[protocol::HEADER_APP_ID] = cparse_app_id_;
 
@@ -108,7 +108,7 @@ for(auto &h : http_headers)
 
         User *user = User::currentUser();
 
-        if(user != NULL)
+        if (user != NULL)
         {
             headers_[protocol::HEADER_SESSION_TOKEN] = user->sessionToken();
         }
@@ -123,9 +123,10 @@ for(auto &h : http_headers)
         headers_[name] = value;
     }
 
-    string Client::buildUrl(const string &path) {
+    string Client::buildUrl(const string &path)
+    {
 
-        char buf[BUFSIZ+1] = {0};
+        char buf[BUFSIZ + 1] = {0};
 
         snprintf(buf, BUFSIZ, "https://%s/%s/%s", protocol::HOST, protocol::VERSION, path.c_str());
 
@@ -149,27 +150,31 @@ for(auto &h : http_headers)
 
     Client &Client::operator=(const Client &c)
     {
-        if(this != &c) {
+        if (this != &c)
+        {
             interface_ = c.interface_;
             headers_ = c.headers_;
         }
         return *this;
     }
 
-    Client &Client::operator=(Client &&c)
+    Client &Client::operator=(Client && c)
     {
-        if(this != &c) {
+        if (this != &c)
+        {
             interface_ = c.interface_;
             headers_ = std::move(c.headers_);
         }
         return *this;
     }
 
-    void Client::setPayload(const string &data) {
+    void Client::setPayload(const string &data)
+    {
         payload_ = data;
     }
 
-    string Client::getPayload() const {
+    string Client::getPayload() const
+    {
         return payload_;
     }
 

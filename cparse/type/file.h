@@ -16,13 +16,13 @@ namespace cparse
             typedef string ContentType;
 
             File();
-            File(const JSON& obj);
+            File(const JSON &obj);
             File(const string &fileName, const ContentType &content, const string &contentType);
             File(const File &value);
             File(File &&value);
             virtual ~File();
             File &operator=(const File &value);
-            File &operator=(File &&value);
+            File &operator=(File && value);
 
             JSON toJSON() const;
             void fromJSON(const JSON &attributes);

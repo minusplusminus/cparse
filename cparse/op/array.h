@@ -23,7 +23,7 @@ namespace cparse
 
             Array &operator=(const Array &value);
 
-            Array &operator=(Array &&value);
+            Array &operator=(Array && value);
 
             JSON toJSON() const;
 

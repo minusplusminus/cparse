@@ -20,7 +20,7 @@ namespace cparse
             Pointer(const Pointer &value);
             Pointer(Pointer &&value);
             Pointer &operator=(const Pointer &value);
-            Pointer &operator=(Pointer &&value);
+            Pointer &operator=(Pointer && value);
             JSON toJSON() const;
             void fromJSON(const JSON &attributes);
             string id() const;

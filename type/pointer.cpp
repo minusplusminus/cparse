@@ -33,7 +33,7 @@ namespace cparse
 
         Pointer &Pointer::operator=(const Pointer &a)
         {
-            if(this != &a)
+            if (this != &a)
             {
                 className_ = a.className_;
                 objectId_ = a.objectId_;
@@ -41,9 +41,9 @@ namespace cparse
             return *this;
         }
 
-        Pointer &Pointer::operator=(Pointer &&a)
+        Pointer &Pointer::operator=(Pointer && a)
         {
-            if(this != &a)
+            if (this != &a)
             {
                 className_ = std::move(a.className_);
                 objectId_ = std::move(a.objectId_);
@@ -54,14 +54,15 @@ namespace cparse
 
         void Pointer::fromJSON(const JSON &obj)
         {
-            if(obj.contains(protocol::KEY_CLASS_NAME))
+            if (obj.contains(protocol::KEY_CLASS_NAME))
                 className_ = obj.getString(protocol::KEY_CLASS_NAME);
 
-            if(obj.contains(protocol::KEY_OBJECT_ID))
+            if (obj.contains(protocol::KEY_OBJECT_ID))
                 objectId_ = obj.getString(protocol::KEY_OBJECT_ID);
         }
 
-        JSON Pointer::toJSON() const {
+        JSON Pointer::toJSON() const
+        {
             JSON value;
 
             value.setString(protocol::KEY_TYPE, protocol::TYPE_POINTER);
@@ -73,7 +74,8 @@ namespace cparse
             return value;
         }
 
-        string Pointer::id() const {
+        string Pointer::id() const
+        {
             return objectId_;
         }
 

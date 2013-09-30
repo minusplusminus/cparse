@@ -37,14 +37,15 @@ namespace cparse
         return *this;
     }
 
-    Parse &Parse::operator=(Parse &&other)
+    Parse &Parse::operator=(Parse && other)
     {
         return *this;
     }
 
     void Parse::set_client_interface(ClientInterface *interface)
     {
-        if(cparse_client_interface_) {
+        if (cparse_client_interface_)
+        {
             delete cparse_client_interface_;
         }
         cparse_client_interface_ = interface;

@@ -22,16 +22,16 @@ namespace cparse
 
         Increment &Increment::operator=(const Increment &a)
         {
-            if(this != &a)
+            if (this != &a)
             {
                 amount_ = a.amount_;
             }
             return *this;
         }
 
-        Increment &Increment::operator=(Increment &&a)
+        Increment &Increment::operator=(Increment && a)
         {
-            if(this != &a)
+            if (this != &a)
             {
                 amount_ = a.amount_;
             }

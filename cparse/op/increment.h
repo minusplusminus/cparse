@@ -16,7 +16,7 @@ namespace cparse
             Increment(Increment &&value);
             virtual ~Increment();
             Increment &operator=(const Increment &value);
-            Increment &operator=(Increment &&value);
+            Increment &operator=(Increment && value);
 
             JSON toJSON() const;
 

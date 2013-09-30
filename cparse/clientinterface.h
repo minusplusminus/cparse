@@ -19,7 +19,7 @@ namespace cparse
     {
     public:
         virtual ~ClientInterface() {}
-        virtual int request(http::method method, const string &url, map<string,string> headers, const string &data, string &response) = 0;
+        virtual int request(http::method method, const string &url, map<string, string> headers, const string &data, string &response) = 0;
     };
 }
 

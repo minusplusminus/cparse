@@ -20,7 +20,7 @@ namespace cparse
         User(User &&other);
         virtual ~User();
         User &operator=(const User &other);
-        User &operator=(User &&other);
+        User &operator=(User && other);
         string getUsername() const;
         void setUsername( const string &value);
         string getEmail() const;

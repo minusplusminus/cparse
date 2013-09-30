@@ -21,7 +21,7 @@ namespace cparse
             Bytes(const Bytes &other);
             Bytes(Bytes &&other);
             Bytes &operator=(const Bytes &other);
-            Bytes &operator=(Bytes &&other);
+            Bytes &operator=(Bytes && other);
 
             JSON toJSON() const;
             void fromJSON(const JSON &attributes);

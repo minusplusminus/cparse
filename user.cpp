@@ -44,15 +44,17 @@ namespace cparse
 
         JSON response;
 
-        try {
+        try
+        {
             response = client.getJSONResponse();
         }
-        catch(const exception &e) {
+        catch (const exception &e)
+        {
             Log::trace(e.what());
             return NULL;
         }
 
-        if(currentUser_ != NULL)
+        if (currentUser_ != NULL)
             delete currentUser_;
 
         currentUser_ = new User();
@@ -81,8 +83,9 @@ namespace cparse
         email_(std::move(u.email_)), sessionToken_(std::move(u.sessionToken_)), isNew_(u.isNew_)
     {}
 
-    User &User::operator=(const User &u) {
-        if(this != &u)
+    User &User::operator=(const User &u)
+    {
+        if (this != &u)
         {
             username_ = u.username_;
             password_ = u.password_;
@@ -93,8 +96,9 @@ namespace cparse
         return *this;
     }
 
-    User &User::operator=(User &&u) {
-        if(this != &u)
+    User &User::operator=(User && u)
+    {
+        if (this != &u)
         {
             username_ = std::move(u.username_);
             password_ = std::move(u.password_);
@@ -114,7 +118,7 @@ namespace cparse
             sessionToken_ = attributes.remove(protocol::KEY_USER_SESSION_TOKEN);
         }
 
-        if(attributes.contains(protocol::KEY_USER_EMAIL))
+        if (attributes.contains(protocol::KEY_USER_EMAIL))
         {
             email_ = attributes.remove(protocol::KEY_USER_EMAIL);
         }

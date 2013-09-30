@@ -45,16 +45,16 @@ namespace cparse
 
         Date &Date::operator=(const Date &a)
         {
-            if(this != &a)
+            if (this != &a)
             {
                 value_ = a.value_;
             }
             return *this;
         }
 
-        Date &Date::operator=(Date &&a)
+        Date &Date::operator=(Date && a)
         {
-            if(this != &a)
+            if (this != &a)
             {
                 value_ = std::move(a.value_);
             }
@@ -64,11 +64,12 @@ namespace cparse
 
         void Date::fromJSON(const JSON &obj)
         {
-            if(obj.contains("iso"))
+            if (obj.contains("iso"))
                 fromString(obj.getString("iso"));
         }
 
-        JSON Date::toJSON() const {
+        JSON Date::toJSON() const
+        {
             JSON value;
 
             value.setString(protocol::KEY_TYPE, protocol::TYPE_DATE);
@@ -78,13 +79,14 @@ namespace cparse
             return value;
         }
 
-        time_t Date::getTimestamp() const {
+        time_t Date::getTimestamp() const
+        {
             return value_;
         }
 
         std::string Date::toString() const
         {
-            char buf[BUFSIZ+1] = {0};
+            char buf[BUFSIZ + 1] = {0};
 
             strftime(buf, BUFSIZ, FORMAT, localtime(&value_));
 

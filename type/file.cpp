@@ -34,7 +34,7 @@ namespace cparse
 
         File &File::operator=(const File &a)
         {
-            if(this != &a)
+            if (this != &a)
             {
                 localFileName_ = a.localFileName_;
                 parseFileName_ = a.parseFileName_;
@@ -45,9 +45,9 @@ namespace cparse
             return *this;
         }
 
-        File &File::operator=(File &&a)
+        File &File::operator=(File && a)
         {
-            if(this != &a)
+            if (this != &a)
             {
                 localFileName_ = std::move(a.localFileName_);
                 parseFileName_ = std::move(a.parseFileName_);
@@ -60,21 +60,21 @@ namespace cparse
 
         void File::fromJSON(const JSON &obj)
         {
-            if(obj.contains("local_filename"))
+            if (obj.contains("local_filename"))
                 localFileName_ = obj.getString("local_filename");
 
-            if(obj.contains("name"))
+            if (obj.contains("name"))
                 parseFileName_ = obj.getString("name");
-            else if(obj.contains("parse_filename"))
+            else if (obj.contains("parse_filename"))
                 parseFileName_ = obj.getString("parse_filename");
 
-            if(obj.contains("content_type"))
+            if (obj.contains("content_type"))
                 contentType_ = obj.getString("content_type");
 
-            if(obj.contains("url"))
+            if (obj.contains("url"))
                 url_ = obj.getString("url");
 
-            if(obj.contains("body"))
+            if (obj.contains("body"))
                 body_ = obj.getString("body");
         }
 
@@ -99,23 +99,29 @@ namespace cparse
         {
             return parseFileName_;
         }
-        string File::getContentType() const {
+        string File::getContentType() const
+        {
             return contentType_;
         }
-        File::ContentType File::getContents() const {
+        File::ContentType File::getContents() const
+        {
             return body_;
         }
-        string File::getUrl() const {
+        string File::getUrl() const
+        {
             return url_;
         }
 
-        void File::setLocaleFileName(const string &fileName) {
+        void File::setLocaleFileName(const string &fileName)
+        {
             localFileName_ = fileName;
         }
-        void File::setContentType(const string &contentType) {
+        void File::setContentType(const string &contentType)
+        {
             contentType_ = contentType;
         }
-        void File::setContents(const ContentType &value) {
+        void File::setContents(const ContentType &value)
+        {
             body_ = value;
         }
 
@@ -129,12 +135,14 @@ namespace cparse
 
             JSON response;
 
-            try {
+            try
+            {
                 client.post("files/" + localFileName_);
 
                 response = client.getJSONResponse();
             }
-            catch(const exception &e) {
+            catch (const exception &e)
+            {
                 Log::trace(e.what());
                 return false;
             }

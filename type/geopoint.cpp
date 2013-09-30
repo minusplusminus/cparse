@@ -26,7 +26,7 @@ namespace cparse
 
         GeoPoint &GeoPoint::operator=(const GeoPoint &a)
         {
-            if(this != &a)
+            if (this != &a)
             {
                 latitude_ = a.latitude_;
                 longitude_ = a.longitude_;
@@ -34,9 +34,9 @@ namespace cparse
             return *this;
         }
 
-        GeoPoint &GeoPoint::operator=(GeoPoint &&a)
+        GeoPoint &GeoPoint::operator=(GeoPoint && a)
         {
-            if(this != &a)
+            if (this != &a)
             {
                 latitude_ = a.latitude_;
                 longitude_ = a.longitude_;
@@ -47,10 +47,10 @@ namespace cparse
 
         void GeoPoint::fromJSON(const JSON &obj)
         {
-            if(obj.contains("latitude"))
+            if (obj.contains("latitude"))
                 latitude_ = obj.getDouble("latitude");
 
-            if(obj.contains("longitude"))
+            if (obj.contains("longitude"))
                 longitude_ = obj.getDouble("longitude");
         }
 

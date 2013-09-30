@@ -9,7 +9,7 @@ namespace cparse
     class CURLClientInterface : public ClientInterface
     {
     public:
-        int request(http::method method, const string &url, map<string,string> headers, const string &data, string &response);
+        int request(http::method method, const string &url, map<string, string> headers, const string &data, string &response);
     };
 
     class Client
@@ -21,7 +21,7 @@ namespace cparse
         Client(const Client &c);
         Client(Client &&c);
         Client &operator=(const Client &c);
-        Client &operator=(Client &&c);
+        Client &operator=(Client && c);
 
         JSON getJSONResponse() const;
 
@@ -38,7 +38,7 @@ namespace cparse
         string buildUrl(const string &path);
     private:
         ClientInterface *interface_;
-        map<string,string> headers_;
+        map<string, string> headers_;
         string response_;
         string payload_;
         int responseCode_;
