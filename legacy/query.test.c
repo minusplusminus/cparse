@@ -36,6 +36,9 @@ START_TEST(test_cparse_query_objects)
 
     fail_unless(query->size == 1);
 
+    CPARSE_OBJ *woody = query->results[0];
+
+    fail_unless(!strcmp(cparse_object_get_string(woody, "name"), "woody"));
 }
 END_TEST
 
