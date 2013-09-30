@@ -20,6 +20,7 @@ struct cparse_query
     bool count;
     CPARSE_JSON *where;
     CPARSE_OBJ **results;
+    size_t size;
     char *keys;
 };
 
@@ -48,6 +49,8 @@ bool cparse_query_find_objects(CPARSE_QUERY *query, CPARSE_ERROR **error);
 #define CPARSE_SELECT "$select"
 #define CPARSE_DONT_SELECT "$dontSelect"
 #define CPARSE_ALL "$all"
+
+#define CPARSE_ARRAY_KEY "arrayKey"
 
 #ifdef __cplusplus
 }

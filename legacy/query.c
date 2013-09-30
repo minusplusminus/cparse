@@ -114,15 +114,30 @@ bool cparse_query_find_objects(CPARSE_QUERY *query, CPARSE_ERROR **error)
         return false;
     }
 
-    CPARSE_JSON *results = cparse_json_get(data, "results");
-
-    size_t resultSize = cparse_json_array_size(results);
-
-    query->results = malloc(sizeof(CPARSE_OBJ) * resultSize);
-
-    for (int i = 0; i < resultSize; i++)
+    if (query->count)
     {
-        query->results[i] = cparse_object_with_class_data(query->className, cparse_json_array_get(results, i));
+        query->size = cparse_json_get_number(data, "count");
+    }
+    else
+    {
+        CPARSE_JSON *results = cparse_json_get(data, "results");
+
+        query->size = cparse_json_array_size(results);
+
+        if (query->size > 0)
+        {
+            if (query->results)
+            {
+                /* fine, go ahead and cleanup */
+                free(query->results);
+            }
+            query->results = malloc(sizeof(CPARSE_OBJ) * query->size);
+
+            for (int i = 0; i < query->size; i++)
+            {
+                query->results[i] = cparse_object_with_class_data(query->className, cparse_json_array_get(results, i));
+            }
+        }
     }
 
     cparse_json_free(data);
