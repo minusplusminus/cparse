@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <cparse/error.h>
 
-CParseError *cparse_error_new()
+CPARSE_ERROR *cparse_error_new()
 {
-    CParseError *e = malloc(sizeof(CParseError));
+    CPARSE_ERROR *e = malloc(sizeof(CPARSE_ERROR));
 
-    if(e == NULL)
+    if (e == NULL)
     {
         fputs("Unable to allocate memory", stderr);
         exit(EXIT_FAILURE);
@@ -18,9 +18,9 @@ CParseError *cparse_error_new()
     return e;
 }
 
-void cparse_error_free(CParseError* e)
+void cparse_error_free(CPARSE_ERROR *e)
 {
-    if(e->message)
+    if (e->message)
         free(e->message);
 
     free(e);

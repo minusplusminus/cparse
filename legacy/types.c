@@ -3,14 +3,14 @@
 #include "protocol.h"
 #include <string.h>
 
-CParsePointer *cparse_pointer_from_json(CParseJSON *data)
+CPARSE_PTR *cparse_pointer_from_json(CPARSE_JSON *data)
 {
     const char *type = cparse_json_get_string(data, KEY_TYPE);
 
-    if(strcmp(type, TYPE_POINTER))
+    if (strcmp(type, TYPE_POINTER))
         return NULL;
 
-    CParsePointer *p = malloc(sizeof(CParsePointer));
+    CPARSE_PTR *p = malloc(sizeof(CPARSE_PTR));
 
     p->className = strdup(cparse_json_get_string(data, KEY_CLASS_NAME));
 
@@ -19,9 +19,9 @@ CParsePointer *cparse_pointer_from_json(CParseJSON *data)
     return p;
 }
 
-CParseJSON *cparse_pointer_to_json(CParsePointer *p)
+CPARSE_JSON *cparse_pointer_to_json(CPARSE_PTR *p)
 {
-    CParseJSON *data = cparse_json_new();
+    CPARSE_JSON *data = cparse_json_new();
 
     cparse_json_set_string(data, KEY_CLASS_NAME, p->className);
 
@@ -32,12 +32,12 @@ CParseJSON *cparse_pointer_to_json(CParsePointer *p)
     return data;
 }
 
-void cparse_pointer_free(CParsePointer *p)
+void cparse_pointer_free(CPARSE_PTR *p)
 {
-    if(p->className)
+    if (p->className)
         free(p->className);
 
-    if(p->objectId)
+    if (p->objectId)
         free(p->objectId);
 
     free(p);

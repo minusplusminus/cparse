@@ -26,20 +26,20 @@ struct cparse_client_request
     HTTPRequestMethod method;
 };
 
-typedef struct cparse_client_response CParseClientResponse;
+typedef struct cparse_client_response CPARSE_CLIENT_RESP;
 
-typedef struct cparse_client_request CParseClientRequest;
+typedef struct cparse_client_request CPARSE_CLIENT_REQ;
 
-CParseClientResponse *cparse_client_request_get_response(CParseClientRequest *request);
+CPARSE_CLIENT_RESP *cparse_client_request_get_response(CPARSE_CLIENT_REQ *request);
 
-CParseClientRequest *cparse_client_request_new();
+CPARSE_CLIENT_REQ *cparse_client_request_new();
 
-void cparse_client_request_free(CParseClientRequest *request);
+void cparse_client_request_free(CPARSE_CLIENT_REQ *request);
 
-void cparse_client_response_free(CParseClientResponse *response);
+void cparse_client_response_free(CPARSE_CLIENT_RESP *response);
 
-CParseJSON *cparse_client_request_get_json(CParseClientRequest *request, CParseError **error);
+CPARSE_JSON *cparse_client_request_get_json(CPARSE_CLIENT_REQ *request, CPARSE_ERROR **error);
 
-void cparse_client_request_perform(CParseClientRequest *request, CParseError **error);
+void cparse_client_request_perform(CPARSE_CLIENT_REQ *request, CPARSE_ERROR **error);
 
 #endif

@@ -15,9 +15,9 @@ time_t cparse_date_time(const char *s)
 
 void replace_str(char **a, const char *b)
 {
-    if(!a) return;
+    if (!a) return;
 
-    if(*a)
+    if (*a)
         free(*a);
 
     (*a) = strdup(b);

@@ -18,9 +18,9 @@ extern const char *cparse_api_key;
 
 extern const char *cparse_app_id;
 
-CParseClientRequest *cparse_client_request_new()
+CPARSE_CLIENT_REQ *cparse_client_request_new()
 {
-    CParseClientRequest *request = malloc(sizeof(CParseClientRequest));
+    CPARSE_CLIENT_REQ *request = malloc(sizeof(CPARSE_CLIENT_REQ));
 
     request->path = NULL;
     request->payload = NULL;
@@ -29,25 +29,25 @@ CParseClientRequest *cparse_client_request_new()
     return request;
 };
 
-void cparse_client_request_free(CParseClientRequest *request)
+void cparse_client_request_free(CPARSE_CLIENT_REQ *request)
 {
-    if(request->path)
+    if (request->path)
         free(request->path);
-    if(request->payload)
+    if (request->payload)
         free(request->payload);
 
     free(request);
 }
 
-void cparse_client_response_free(CParseClientResponse *response)
+void cparse_client_response_free(CPARSE_CLIENT_RESP *response)
 {
-    if(response->size > 0 && response->text)
+    if (response->size > 0 && response->text)
         free(response->text);
 
     free(response);
 }
 
-static size_t cparse_client_get_response(void *ptr, size_t size, size_t nmemb, CParseClientResponse *s)
+static size_t cparse_client_get_response(void *ptr, size_t size, size_t nmemb, CPARSE_CLIENT_RESP *s)
 {
     assert(s != NULL);
 
@@ -99,17 +99,17 @@ static void cparse_client_set_headers(CURL *curl)
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 }
 
-void cparse_client_request_perform(CParseClientRequest *request, CParseError **error)
+void cparse_client_request_perform(CPARSE_CLIENT_REQ *request, CPARSE_ERROR **error)
 {
-    CParseClientResponse *response = cparse_client_request_get_response(request);
+    CPARSE_CLIENT_RESP *response = cparse_client_request_get_response(request);
 
-    CParseJSON *obj = json_tokener_parse(response->text);
+    CPARSE_JSON *obj = json_tokener_parse(response->text);
 
     const char *errorMessage = cparse_json_get_string(obj, "error");
 
     cparse_client_response_free(response);
 
-    if(errorMessage != NULL)
+    if (errorMessage != NULL)
     {
         *error = cparse_error_new();
 
@@ -121,13 +121,13 @@ void cparse_client_request_perform(CParseClientRequest *request, CParseError **e
     cparse_json_free(obj);
 }
 
-CParseJSON *cparse_client_request_get_json(CParseClientRequest *request, CParseError **error)
+CPARSE_JSON *cparse_client_request_get_json(CPARSE_CLIENT_REQ *request, CPARSE_ERROR **error)
 {
-    CParseClientResponse *response = cparse_client_request_get_response(request);
+    CPARSE_CLIENT_RESP *response = cparse_client_request_get_response(request);
 
     json_tokener *tok = json_tokener_new();
 
-    CParseJSON *obj = json_tokener_parse_ex(tok, response->text, response->size);
+    CPARSE_JSON *obj = json_tokener_parse_ex(tok, response->text, response->size);
 
     cparse_client_response_free(response);
 
@@ -137,7 +137,7 @@ CParseJSON *cparse_client_request_get_json(CParseClientRequest *request, CParseE
 
     json_tokener_free(tok);
 
-    if(parseError != json_tokener_success)
+    if (parseError != json_tokener_success)
     {
         errorMessage = json_tokener_error_desc(parseError);
     }
@@ -147,7 +147,7 @@ CParseJSON *cparse_client_request_get_json(CParseClientRequest *request, CParseE
         errorMessage = cparse_json_get_string(obj, "error");
     }
 
-    if(errorMessage != NULL)
+    if (errorMessage != NULL)
     {
         *error = cparse_error_new();
 
@@ -163,11 +163,11 @@ CParseJSON *cparse_client_request_get_json(CParseClientRequest *request, CParseE
     return obj;
 }
 
-CParseClientResponse *cparse_client_request_get_response(CParseClientRequest *request)
+CPARSE_CLIENT_RESP *cparse_client_request_get_response(CPARSE_CLIENT_REQ *request)
 {
     CURL *curl;
     CURLcode res;
-    CParseClientResponse *response;
+    CPARSE_CLIENT_RESP *response;
 
     curl = curl_easy_init();
     if (curl == NULL)
@@ -176,7 +176,7 @@ CParseClientResponse *cparse_client_request_get_response(CParseClientRequest *re
         return NULL;
     }
 
-    response = malloc(sizeof(CParseClientResponse));
+    response = malloc(sizeof(CPARSE_CLIENT_RESP));
     response->text = NULL;
     response->code = 0;
     response->size = 0;

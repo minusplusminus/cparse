@@ -6,22 +6,22 @@
 extern "C" {
 #endif
 
-    struct cparse_op_array
-    {
-        const char *operation;
-        CParseJSON *objects;
-    };
+struct cparse_op_array
+{
+    const char *operation;
+    CPARSE_JSON *objects;
+};
 
-    struct cparse_op_decrement
-    {
-        int amount;
+struct cparse_op_decrement
+{
+    int amount;
 
-    };
+};
 
-    struct cparse_op_increment
-    {
-        int amount;
-    };
+struct cparse_op_increment
+{
+    int amount;
+};
 
 
 #ifdef __cplusplus

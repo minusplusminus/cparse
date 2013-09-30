@@ -7,23 +7,23 @@
 extern "C" {
 #endif
 
-    struct cparse_acl
-    {
-        CParseACL *next;
-        char *name;
-        bool read;
-        bool write;
-    };
+struct cparse_acl
+{
+    CPARSE_ACL *next;
+    char *name;
+    bool read;
+    bool write;
+};
 
-    CParseACL *cparse_acl_new();
+CPARSE_ACL *cparse_acl_new();
 
-    CParseACL *cparse_acl_new_with_user(CParseUser *user);
+CPARSE_ACL *cparse_acl_new_with_user(CPARSE_USER *user);
 
-    CParseACL *cparse_acl_copy(CParseACL *other);
+CPARSE_ACL *cparse_acl_copy(CPARSE_ACL *other);
 
-    void cparse_set_default_acl(CParseACL *acl, bool currentUserAccess);
+void cparse_set_default_acl(CPARSE_ACL *acl, bool currentUserAccess);
 
-    void cparse_acl_free(CParseACL *acl);
+void cparse_acl_free(CPARSE_ACL *acl);
 
 
 #ifdef __cplusplus

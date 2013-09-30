@@ -3,14 +3,14 @@
 #include <cparse/acl.h>
 #include <cparse/user.h>
 
-CParseACL *first_acl;
+CPARSE_ACL *first_acl;
 
-CParseACL *default_acl = 0;
+CPARSE_ACL *default_acl = 0;
 
 
-CParseACL *cparse_acl_new()
+CPARSE_ACL *cparse_acl_new()
 {
-    CParseACL *acl = malloc(sizeof(CParseACL));
+    CPARSE_ACL *acl = malloc(sizeof(CPARSE_ACL));
     acl->next = NULL;
     acl->name = NULL;
     acl->read = false;
@@ -18,18 +18,18 @@ CParseACL *cparse_acl_new()
     return acl;
 }
 
-CParseACL *cparse_acl_new_with_user(CParseUser *user)
+CPARSE_ACL *cparse_acl_new_with_user(CPARSE_USER *user)
 {
-    CParseACL *acl = cparse_acl_new();
+    CPARSE_ACL *acl = cparse_acl_new();
 
     acl->name = strdup(user->username);
 
     return acl;
 }
 
-CParseACL *cparse_acl_copy(CParseACL *other)
+CPARSE_ACL *cparse_acl_copy(CPARSE_ACL *other)
 {
-    CParseACL *acl = cparse_acl_new();
+    CPARSE_ACL *acl = cparse_acl_new();
 
     acl->name = strdup(other->name);
     acl->read = other->read;
@@ -38,19 +38,19 @@ CParseACL *cparse_acl_copy(CParseACL *other)
     return acl;
 }
 
-void cparse_set_default_acl(CParseACL *acl, bool currentUserAccess)
+void cparse_set_default_acl(CPARSE_ACL *acl, bool currentUserAccess)
 {
     default_acl = acl;
 
-    if(currentUserAccess)
+    if (currentUserAccess)
     {
 
     }
 }
 
-void cparse_acl_free(CParseACL *acl)
+void cparse_acl_free(CPARSE_ACL *acl)
 {
-    if(acl->name)
+    if (acl->name)
     {
         free(acl->name);
     }

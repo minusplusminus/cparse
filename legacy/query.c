@@ -1,70 +1,146 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <cparse/query.h>
+#include <cparse/json.h>
+#include "client.h"
 
 void cparse_query_clear_all_caches()
 {
 
 }
 
-CParseQuery *cparse_query_new()
+CPARSE_QUERY *cparse_query_new()
 {
-    CParseQuery *query = malloc(sizeof(CParseQuery));
+    CPARSE_QUERY *query = malloc(sizeof(CPARSE_QUERY));
 
-    query->cachePolicy = kCParseCachePolicyIgnoreCache;
+    /*query->cachePolicy = kCParseCachePolicyIgnoreCache;*/
     query->className = NULL;
     query->limit = 0;
     query->skip = 0;
     query->trace = false;
+    query->where = NULL;
+    query->results = NULL;
+    query->keys = NULL;
+    query->count = false;
 
     return query;
 }
 
-void cparse_query_delete(CParseQuery *query)
+void cparse_query_free(CPARSE_QUERY *query)
 {
-    if(query->className)
+    if (query->className)
         free(query->className);
+
+    if (query->keys)
+        free(query->keys);
+
+    if (query->results)
+    {
+        /* note: don't delete the objects, just the array */
+        free(query->results);
+    }
+
+    if (query->where)
+        cparse_json_free(query->where);
 
     free(query);
 }
 
-CParseObject *cparse_query_get_object_of_class(const char *objectClass, const char *objectId, CParseError **error)
+CPARSE_QUERY *cparse_query_with_class_name(const char *className)
 {
-
-    return NULL;
-}
-
-CParseObject *cparse_query_get_object_with_id(const char *objectId, CParseError **error)
-{
-    return NULL;
-}
-
-CParseQuery *cparse_query_or_with_subqueries(CParseQuery **subqueries, size_t count)
-{
-    return NULL;
-}
-
-CParseQuery *cparse_query_with_class_name(const char *className)
-{
-    CParseQuery *query = cparse_query_new();
+    CPARSE_QUERY *query = cparse_query_new();
 
     query->className = strdup(className);
 
     return query;
 }
 
+bool cparse_query_find_objects(CPARSE_QUERY *query, CPARSE_ERROR **error)
+{
+    CPARSE_CLIENT_REQ *request;
+    CPARSE_JSON *data;
+    char buf[BUFSIZ + 1];
+    char params[BUFSIZ + 1] = {0};
+    int pos;
 
-void cparse_query_cancel(CParseQuery *query)
+    request = cparse_client_request_new();
+
+    /* build the request */
+    snprintf(buf, BUFSIZ, "classes/%s", query->className);
+
+    request->path = strdup(buf);
+
+    request->method = kHTTPRequestGet;
+
+    pos = 0;
+
+    if (query->where)
+    {
+        pos = snprintf(&params[pos], BUFSIZ, "where=%s\n", cparse_json_to_json_string(query->where));
+    }
+
+    if (query->limit > 0)
+    {
+        pos = snprintf(&params[pos], BUFSIZ, "limit=%d\n", query->limit);
+    }
+
+    if (query->skip > 0)
+    {
+        pos = snprintf(&params[pos], BUFSIZ, "skip=%d\n", query->skip);
+    }
+
+    if (query->keys)
+    {
+        pos = snprintf(&params[pos], BUFSIZ, "keys=%s\n", query->keys);
+    }
+
+    if (query->count)
+    {
+        pos = snprintf(&params[pos], BUFSIZ, "count=1\n");
+    }
+
+    request->payload = strdup(params);
+
+    /* do the deed */
+    data = cparse_client_request_get_json(request, error);
+
+    cparse_client_request_free(request);
+
+    if (error != NULL && *error != NULL)
+    {
+        cparse_json_free(data);
+
+        return false;
+    }
+
+    CPARSE_JSON *results = cparse_json_get(data, "results");
+
+    size_t resultSize = cparse_json_array_size(results);
+
+    query->results = malloc(sizeof(CPARSE_OBJ) * resultSize);
+
+    for (int i = 0; i < resultSize; i++)
+    {
+        query->results[i] = cparse_object_with_class_data(query->className, cparse_json_array_get(results, i));
+    }
+
+    cparse_json_free(data);
+
+    return true;
+}
+
+void cparse_query_cancel(CPARSE_QUERY *query)
 {
 
 }
 
-void cparse_query_clear_cache(CParseQuery *query)
+/*void cparse_query_clear_cache(CPARSE_QUERY *query)
 {
 
-}
+}*/
 
-int cparse_query_count_objects(CParseQuery *query, CParseError **error)
+int cparse_query_count_objects(CPARSE_QUERY *query, CPARSE_ERROR **error)
 {
     return 0;
 }

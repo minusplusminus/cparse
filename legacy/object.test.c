@@ -5,14 +5,10 @@
 #include <cparse/json.h>
 #include <cparse/error.h>
 
-CParseObject *cp_obj = NULL;
+CPARSE_OBJ *cp_obj = NULL;
 
 static void cparse_test_setup()
 {
-    cparse_set_application_id("CODG0SmrNhqoZOheWT0Q4sATFvQTdZhzOjGA5OGb");
-
-    cparse_set_api_key("wXu2P8buzDdTq02mQgJkxrJz1TEHNgOvKtDTUuZ7");
-
     cp_obj = cparse_object_with_class_name("TestCase");
 }
 
@@ -30,9 +26,12 @@ START_TEST(test_cparse_object_save)
 
     cparse_object_set_string(cp_obj, "name", "spok");
 
-    CParseError *error = NULL;
+    CPARSE_ERROR *error = NULL;
 
     cparse_object_save(cp_obj, &error);
+
+    if (error != NULL)
+        printf("%s", error->message);
 
     fail_unless(error == NULL);
 
@@ -43,13 +42,13 @@ END_TEST
 START_TEST(test_cparse_object_fetch)
 {
     /* first create reference object */
-    CParseObject *obj = cparse_object_with_class_name("TestCase");
+    CPARSE_OBJ *obj = cparse_object_with_class_name("TestCase");
 
     cparse_object_set_number(obj, "score", 1234);
 
     cparse_object_set_string(obj, "name", "spok");
 
-    CParseError *error = NULL;
+    CPARSE_ERROR *error = NULL;
 
     cparse_object_save(obj, &error);
 
@@ -61,7 +60,7 @@ START_TEST(test_cparse_object_fetch)
 
     cparse_object_set_reference(cp_obj, "inner", obj);
 
-    CParseJSON *data = cparse_object_get(cp_obj, "inner");
+    CPARSE_JSON *data = cparse_object_get(cp_obj, "inner");
 
     cparse_object_save(cp_obj, &error);
 
@@ -83,7 +82,7 @@ START_TEST(test_cparse_object_fetch)
 }
 END_TEST
 
-void test_cparse_object_callback(CParseObject *obj, CParseError *error)
+void test_cparse_object_callback(CPARSE_OBJ *obj, CPARSE_ERROR *error)
 {
     fail_unless(obj->objectId != NULL);
 }
@@ -123,13 +122,13 @@ END_TEST
 
 START_TEST(test_cparse_object_remove_attribute)
 {
-    CParseJSON *value = cparse_json_new_string("1234");
+    CPARSE_JSON *value = cparse_json_new_string("1234");
 
     cparse_object_set(cp_obj, "main", value);
 
     fail_unless(cparse_object_attributes(cp_obj) == 1);
 
-    CParseJSON *removed = cparse_object_remove(cp_obj, "main");
+    CPARSE_JSON *removed = cparse_object_remove(cp_obj, "main");
 
     fail_unless(removed == value);
 

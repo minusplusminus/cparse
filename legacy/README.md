@@ -10,6 +10,12 @@ Setup
 - run 'premake4 gmake' or 'premake4 vs2010' depending on your environment, which will build the makefile or project file
 - run 'make' to compile the library and run the unit tests
 
+Code style
+==========
+- function names: lower case underscored, prefixed with cparse namespace
+- typedefs and defines: upper case underscored, prefixed with CPARSE namespace
+- enums and variables: camel case
+
 Dependencies
 ============
 

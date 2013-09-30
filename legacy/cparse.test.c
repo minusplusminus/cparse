@@ -20,7 +20,7 @@ void read_test_config()
     FILE *file = fopen("./parse.test.json", "rb");
     char *text;
     long fsize;
-    CParseJSON *config;
+    CPARSE_JSON *config;
 
     if (!file)
         die("parse.test.json not found");
@@ -40,7 +40,7 @@ void read_test_config()
     config = cparse_json_tokenize(text);
 
     if (cparse_json_contains(config, "parseAppId"))
-        cparse_set_application_id(cparse_json_get_string(config,"parseAppId"));
+        cparse_set_application_id(cparse_json_get_string(config, "parseAppId"));
     else
         die("No app id");
 

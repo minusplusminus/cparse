@@ -3,24 +3,24 @@
 #include <cparse/user.h>
 
 
-CParseUser *current_user;
+CPARSE_USER *current_user;
 
-CParseUser *automatic_user;
+CPARSE_USER *automatic_user;
 
-extern CParseQuery *cparse_query_new();
+extern CPARSE_QUERY *cparse_query_new();
 
-CParseUser *cparse_current_user()
+CPARSE_USER *cparse_current_user()
 {
-    if(current_user == NULL)
+    if (current_user == NULL)
     {
         return automatic_user;
     }
     return current_user;
 }
 
-static CParseUser *cparse_user_new()
+static CPARSE_USER *cparse_user_new()
 {
-    CParseUser *user = malloc(sizeof(CParseUser));
+    CPARSE_USER *user = malloc(sizeof(CPARSE_USER));
 
     user->username = NULL;
     user->email = NULL;
@@ -30,15 +30,15 @@ static CParseUser *cparse_user_new()
     return user;
 }
 
-void cparse_user_delete(CParseUser *user)
+void cparse_user_delete(CPARSE_USER *user)
 {
-    if(user->username)
+    if (user->username)
         free(user->username);
-    if(user->email)
+    if (user->email)
         free(user->email);
-    if(user->password)
+    if (user->password)
         free(user->password);
-    if(user->sessionToken)
+    if (user->sessionToken)
         free(user->sessionToken);
 
     free(user);
@@ -46,15 +46,15 @@ void cparse_user_delete(CParseUser *user)
 
 void cparse_user_enable_automatic_user()
 {
-    if(automatic_user == NULL)
+    if (automatic_user == NULL)
     {
         automatic_user = cparse_user_new();
     }
 }
 
-CParseUser *cparse_user_login(const char *username, const char *password, CParseError **error)
+CPARSE_USER *cparse_user_login(const char *username, const char *password, CPARSE_ERROR **error)
 {
-    CParseUser *user = cparse_user_new();
+    CPARSE_USER *user = cparse_user_new();
 
     user->username = strdup(username);
     user->password = strdup(password);
@@ -65,7 +65,7 @@ CParseUser *cparse_user_login(const char *username, const char *password, CParse
     return user;
 }
 
-void cparse_user_login_in_background(const char *username, const char *password, CParseUserCallback callback)
+void cparse_user_login_in_background(const char *username, const char *password, CPARSE_USER_CALLBACK callback)
 {
 
 }
@@ -75,9 +75,9 @@ void cparse_user_logout()
 
 }
 
-CParseQuery *cparse_user_query()
+CPARSE_QUERY *cparse_user_query()
 {
-    CParseQuery *query = cparse_query_new();
+    CPARSE_QUERY *query = cparse_query_new();
 
     return query;
 }
